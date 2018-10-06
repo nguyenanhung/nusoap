@@ -9,7 +9,7 @@
         "get_content"
     ],
     "homepage": "https://github.com/nguyenanhung/nusoap",
-    "license": "GPL-3.0",
+    "license": "LGPL-2.1",
     "authors": [
         {
             "name": "Dietrich Ayala",
