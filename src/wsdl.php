@@ -71,11 +71,11 @@ class wsdl extends nusoap_base
      *
      * @access public
      */
-    function wsdl(
+    function __construct(
         $wsdl = '', $proxyhost = FALSE, $proxyport = FALSE, $proxyusername = FALSE, $proxypassword = FALSE, $timeout = 0,
         $response_timeout = 30, $curl_options = NULL, $use_curl = FALSE
     ) {
-        parent::nusoap_base();
+        parent::__construct();
         $this->debug("ctor wsdl=$wsdl timeout=$timeout response_timeout=$response_timeout");
         $this->proxyhost        = $proxyhost;
         $this->proxyport        = $proxyport;
