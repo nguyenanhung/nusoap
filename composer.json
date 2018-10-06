@@ -12,6 +12,14 @@
     "license": "GPL-3.0",
     "authors": [
         {
+            "name": "Dietrich Ayala",
+            "homepage": "http://sourceforge.net/u/dietricha/profile/"
+        },
+        {
+            "name": "Scott Nichol",
+            "homepage": "http://sourceforge.net/u/snichol/profile/"
+        },
+        {
             "name": "Nguyen An Hung",
             "email": "dev@nguyenanhung.com",
             "homepage": "https://nguyenanhung.com",
