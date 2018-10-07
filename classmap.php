@@ -19,6 +19,8 @@ spl_autoload_register(function ($className) {
         $fileName = str_replace('nguyenanhung\MyNuSOAP\Interfaces', 'src\Interfaces', $fileName);
     } elseif (strpos($fileName, 'nguyenanhung\MyNuSOAP\Repository') !== FALSE) {
         $fileName = str_replace('nguyenanhung\MyNuSOAP\Repository', 'src\Repository', $fileName);
+    } elseif (strpos($fileName, 'nguyenanhung\MyFixNuSOAP') !== FALSE) {
+        $fileName = str_replace('nguyenanhung\MyFixNuSOAP', 'src-fix', $fileName);
     } else {
         $fileName = str_replace('nguyenanhung\MyNuSOAP', 'src', $fileName);
     }
