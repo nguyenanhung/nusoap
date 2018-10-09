@@ -1,7 +1,7 @@
 {
     "name": "nguyenanhung/nusoap",
     "type": "library",
-    "description": "My nuSOAP Library",
+    "description": "My nuSOAP Library, fix code for Php >= 5.4",
     "keywords": [
         "request",
         "http",
