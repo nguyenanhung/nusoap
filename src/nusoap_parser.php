@@ -2,7 +2,6 @@
 
 namespace nguyenanhung\MyNuSOAP;
 
-
 /**
  *
  * nusoap_parser class parses SOAP XML messages into native PHP values
@@ -52,10 +51,10 @@ class nusoap_parser extends nusoap_base
     /**
      * constructor that actually does the parsing
      *
-     * @param    string $xml         SOAP message
-     * @param    string $encoding    character encoding scheme of message
-     * @param    string $method      method for which XML is parsed (unused?)
-     * @param    string $decode_utf8 whether to decode UTF-8 to ISO-8859-1
+     * @param string $xml         SOAP message
+     * @param string $encoding    character encoding scheme of message
+     * @param string $method      method for which XML is parsed (unused?)
+     * @param string $decode_utf8 whether to decode UTF-8 to ISO-8859-1
      *
      * @access   public
      */
@@ -150,9 +149,9 @@ class nusoap_parser extends nusoap_base
     /**
      * start-element handler
      *
-     * @param    resource $parser XML parser object
-     * @param    string   $name   element name
-     * @param    array    $attrs  associative array of attributes
+     * @param resource $parser XML parser object
+     * @param string   $name   element name
+     * @param array    $attrs  associative array of attributes
      *
      * @access   private
      */
@@ -308,8 +307,8 @@ class nusoap_parser extends nusoap_base
     /**
      * end-element handler
      *
-     * @param    resource $parser XML parser object
-     * @param    string   $name   element name
+     * @param resource $parser XML parser object
+     * @param string   $name   element name
      *
      * @access   private
      */
@@ -416,8 +415,8 @@ class nusoap_parser extends nusoap_base
     /**
      * element content handler
      *
-     * @param    resource $parser XML parser object
-     * @param    string   $data   element content
+     * @param resource $parser XML parser object
+     * @param string   $data   element content
      *
      * @access   private
      */
@@ -489,9 +488,9 @@ class nusoap_parser extends nusoap_base
     /**
      * decodes simple types into PHP variables
      *
-     * @param    string $value  value to decode
-     * @param    string $type   XML type to decode
-     * @param    string $typens XML type namespace to decode
+     * @param string $value  value to decode
+     * @param string $type   XML type to decode
+     * @param string $typens XML type namespace to decode
      *
      * @return    mixed PHP value
      * @access   private
@@ -540,7 +539,7 @@ class nusoap_parser extends nusoap_base
      * builds response structures for compound values (arrays/structs)
      * and scalars
      *
-     * @param    integer $pos position in node tree
+     * @param integer $pos position in node tree
      *
      * @return    mixed    PHP value
      * @access   private
@@ -664,6 +663,3 @@ class nusoap_parser extends nusoap_base
 class soap_parser extends nusoap_parser
 {
 }
-
-
-?>

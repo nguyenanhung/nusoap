@@ -1,5 +1,7 @@
 <?php
+
 namespace nguyenanhung\MyNuSOAP;
+
 /*
 $Id: nusoapmime.php,v 1.13 2010/04/26 20:15:08 snichol Exp $
 
@@ -227,8 +229,8 @@ class nusoap_client_mime extends nusoap_client
     /**
      * processes SOAP message returned from server
      *
-     * @param    array  $headers The HTTP headers
-     * @param    string $data    unprocessed response data from server
+     * @param array  $headers The HTTP headers
+     * @param string $data    unprocessed response data from server
      *
      * @return    mixed    value of the message, decoded into a PHP type
      * @access   private
@@ -474,8 +476,8 @@ class nusoap_server_mime extends nusoap_server
     /**
      * processes SOAP message received from client
      *
-     * @param    array  $headers The HTTP headers
-     * @param    string $data    unprocessed request data from client
+     * @param array  $headers The HTTP headers
+     * @param string $data    unprocessed request data from client
      *
      * @return    mixed    value of the message, decoded into a PHP type
      * @access   private
@@ -533,4 +535,3 @@ class nusoapservermime extends nusoap_server_mime
 {
 }
 
-?>

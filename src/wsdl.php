@@ -2,7 +2,6 @@
 
 namespace nguyenanhung\MyNuSOAP;
 
-
 /**
  * parses a WSDL file, allows access to it's data, other utility methods.
  * also builds WSDL structures programmatically.
@@ -571,10 +570,10 @@ class wsdl extends nusoap_base
     /**
      * if authenticating, set user credentials here
      *
-     * @param    string $username
-     * @param    string $password
-     * @param    string $authtype    (basic|digest|certificate|ntlm)
-     * @param    array  $certRequest (keys must be cainfofile (optional), sslcertfile, sslkeyfile, passphrase, certpassword (optional),
+     * @param string $username
+     * @param string $password
+     * @param string $authtype       (basic|digest|certificate|ntlm)
+     * @param array  $certRequest    (keys must be cainfofile (optional), sslcertfile, sslkeyfile, passphrase, certpassword (optional),
      *                               verifypeer (optional), verifyhost (optional): see corresponding options in cURL docs)
      *
      * @access   public
@@ -2010,5 +2009,3 @@ class wsdl extends nusoap_base
         return TRUE;
     }
 }
-
-?>

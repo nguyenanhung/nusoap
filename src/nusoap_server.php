@@ -2,7 +2,6 @@
 
 namespace nguyenanhung\MyNuSOAP;
 
-
 /**
  *
  * nusoap_server allows the user to create a SOAP server
@@ -187,7 +186,6 @@ class nusoap_server extends nusoap_base
      */
     var $debug_flag = FALSE;
 
-
     /**
      * constructor
      * the optional parameter is a path to a WSDL file that you'd like to bind the server instance to.
@@ -257,7 +255,7 @@ class nusoap_server extends nusoap_base
     /**
      * processes request and returns response
      *
-     * @param    string $data usually is the value of $HTTP_RAW_POST_DATA
+     * @param string $data usually is the value of $HTTP_RAW_POST_DATA
      *
      * @access   public
      */
@@ -472,7 +470,7 @@ class nusoap_server extends nusoap_base
      *
      * This sets the fault field on error
      *
-     * @param    string $data XML string
+     * @param string $data XML string
      *
      * @access   private
      */
@@ -867,8 +865,8 @@ class nusoap_server extends nusoap_base
      * takes the value that was created by parsing the request
      * and compares to the method's signature, if available.
      *
-     * @param    string $operation The operation to be invoked
-     * @param    array  $request   The array of parameter values
+     * @param string $operation The operation to be invoked
+     * @param array  $request   The array of parameter values
      *
      * @return    boolean    Whether the operation was found
      * @access   private
@@ -889,8 +887,8 @@ class nusoap_server extends nusoap_base
     /**
      * processes SOAP message received from client
      *
-     * @param    array  $headers The HTTP headers
-     * @param    string $data    unprocessed request data from client
+     * @param array  $headers The HTTP headers
+     * @param string $data    unprocessed request data from client
      *
      * @return    mixed    value of the message, decoded into a PHP type
      * @access   private
@@ -990,9 +988,9 @@ class nusoap_server extends nusoap_base
     /**
      * add a method to the dispatch map (this has been replaced by the register method)
      *
-     * @param    string $methodname
-     * @param    string $in  array of input values
-     * @param    string $out array of output values
+     * @param string $methodname
+     * @param string $in  array of input values
+     * @param string $out array of output values
      *
      * @access   public
      * @deprecated
@@ -1005,16 +1003,16 @@ class nusoap_server extends nusoap_base
     /**
      * register a service function with the server
      *
-     * @param    string $name          the name of the PHP function, class.method or class..method
-     * @param    array  $in            assoc array of input values: key = param name, value = param type
-     * @param    array  $out           assoc array of output values: key = param name, value = param type
-     * @param    mixed  $namespace     the element namespace for the method or false
-     * @param    mixed  $soapaction    the soapaction for the method or false
-     * @param    mixed  $style         optional (rpc|document) or false Note: when 'document' is specified, parameter and return wrappers
+     * @param string $name             the name of the PHP function, class.method or class..method
+     * @param array  $in               assoc array of input values: key = param name, value = param type
+     * @param array  $out              assoc array of output values: key = param name, value = param type
+     * @param mixed  $namespace        the element namespace for the method or false
+     * @param mixed  $soapaction       the soapaction for the method or false
+     * @param mixed  $style            optional (rpc|document) or false Note: when 'document' is specified, parameter and return wrappers
      *                                 are created for you automatically
-     * @param    mixed  $use           optional (encoded|literal) or false
-     * @param    string $documentation optional Description to include in WSDL
-     * @param    string $encodingStyle optional (usually 'http://schemas.xmlsoap.org/soap/encoding/' for encoded)
+     * @param mixed  $use              optional (encoded|literal) or false
+     * @param string $documentation    optional Description to include in WSDL
+     * @param string $encodingStyle    optional (usually 'http://schemas.xmlsoap.org/soap/encoding/' for encoded)
      *
      * @access   public
      */
@@ -1085,10 +1083,10 @@ class nusoap_server extends nusoap_base
      * Specify a fault to be returned to the client.
      * This also acts as a flag to the server that a fault has occured.
      *
-     * @param    string $faultcode
-     * @param    string $faultstring
-     * @param    string $faultactor
-     * @param    string $faultdetail
+     * @param string $faultcode
+     * @param string $faultstring
+     * @param string $faultactor
+     * @param string $faultdetail
      *
      * @access   public
      */
@@ -1194,6 +1192,3 @@ class nusoap_server extends nusoap_base
 class soap_server extends nusoap_server
 {
 }
-
-
-?>

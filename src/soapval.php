@@ -2,7 +2,6 @@
 
 namespace nguyenanhung\MyNuSOAP;
 
-
 /**
  * For creating serializable abstractions of native PHP types.  This class
  * allows element name/namespace, XSD type, and XML attributes to be
@@ -62,12 +61,12 @@ class soapval extends nusoap_base
     /**
      * constructor
      *
-     * @param    string $name       optional name
-     * @param    mixed  $type       optional type name
-     * @param    mixed  $value      optional value
-     * @param    mixed  $element_ns optional namespace of value
-     * @param    mixed  $type_ns    optional namespace of type
-     * @param    mixed  $attributes associative array of attributes to add to element serialization
+     * @param string $name       optional name
+     * @param mixed  $type       optional type name
+     * @param mixed  $value      optional value
+     * @param mixed  $element_ns optional namespace of value
+     * @param mixed  $type_ns    optional namespace of type
+     * @param mixed  $attributes associative array of attributes to add to element serialization
      *
      * @access   public
      */
@@ -85,7 +84,7 @@ class soapval extends nusoap_base
     /**
      * return serialized value
      *
-     * @param    string $use The WSDL use value (encoded|literal)
+     * @param string $use The WSDL use value (encoded|literal)
      *
      * @return    string XML data
      * @access   public
@@ -106,6 +105,3 @@ class soapval extends nusoap_base
         return $this->value;
     }
 }
-
-
-?>

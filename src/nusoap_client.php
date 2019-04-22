@@ -1,6 +1,6 @@
 <?php
-namespace nguyenanhung\MyNuSOAP;
 
+namespace nguyenanhung\MyNuSOAP;
 
 /**
  *
@@ -84,15 +84,15 @@ class nusoap_client extends nusoap_base
     /**
      * constructor
      *
-     * @param    mixed   $endpoint         SOAP server or WSDL URL (string), or wsdl instance (object)
-     * @param    mixed   $wsdl             optional, set to 'wsdl' or true if using WSDL
-     * @param    string  $proxyhost        optional
-     * @param    string  $proxyport        optional
-     * @param    string  $proxyusername    optional
-     * @param    string  $proxypassword    optional
-     * @param    integer $timeout          set the connection timeout
-     * @param    integer $response_timeout set the response timeout
-     * @param    string  $portName         optional portName in WSDL document
+     * @param mixed   $endpoint         SOAP server or WSDL URL (string), or wsdl instance (object)
+     * @param mixed   $wsdl             optional, set to 'wsdl' or true if using WSDL
+     * @param string  $proxyhost        optional
+     * @param string  $proxyport        optional
+     * @param string  $proxyusername    optional
+     * @param string  $proxypassword    optional
+     * @param integer $timeout          set the connection timeout
+     * @param integer $response_timeout set the response timeout
+     * @param string  $portName         optional portName in WSDL document
      *
      * @access   public
      */
@@ -136,8 +136,8 @@ class nusoap_client extends nusoap_base
     /**
      * calls method, returns PHP native type
      *
-     * @param    string  $operation  SOAP server URL or path
-     * @param    mixed   $params     An array, associative or simple, of the parameters
+     * @param string  $operation     SOAP server URL or path
+     * @param mixed   $params        An array, associative or simple, of the parameters
      *                               for the method call, or a string that is the XML
      *                               for the call.  For rpc style, this call will
      *                               wrap the XML in a tag named after the method, as
@@ -149,13 +149,13 @@ class nusoap_client extends nusoap_base
      *                               used in the call, which encloses what programmers
      *                               normally think of parameters.  A parameter array
      *                               *must* include the wrapper.
-     * @param    string  $namespace  optional method namespace (WSDL can override)
-     * @param    string  $soapAction optional SOAPAction value (WSDL can override)
-     * @param    mixed   $headers    optional string of XML with SOAP header content, or array of soapval objects for SOAP headers, or
+     * @param string  $namespace     optional method namespace (WSDL can override)
+     * @param string  $soapAction    optional SOAPAction value (WSDL can override)
+     * @param mixed   $headers       optional string of XML with SOAP header content, or array of soapval objects for SOAP headers, or
      *                               associative array
-     * @param    boolean $rpcParams  optional (no longer used)
-     * @param    string  $style      optional (rpc|document) the style to use when serializing parameters (WSDL can override)
-     * @param    string  $use        optional (encoded|literal) the use when serializing parameters (WSDL can override)
+     * @param boolean $rpcParams     optional (no longer used)
+     * @param string  $style         optional (rpc|document) the style to use when serializing parameters (WSDL can override)
+     * @param string  $use           optional (encoded|literal) the use when serializing parameters (WSDL can override)
      *
      * @return    mixed    response from SOAP call, normally an associative array mirroring the structure of the XML response, false for
      *                     certain fatal errors
@@ -400,7 +400,7 @@ class nusoap_client extends nusoap_base
     /**
      * get available data pertaining to an operation
      *
-     * @param    string $operation operation name
+     * @param string $operation operation name
      *
      * @return    array array of data pertaining to the operation
      * @access   public
@@ -425,10 +425,10 @@ class nusoap_client extends nusoap_base
      * the return value of this method will be an array
      * of those values.
      *
-     * @param    string  $msg              a SOAPx4 soapmsg object
-     * @param    string  $soapaction       SOAPAction value
-     * @param    integer $timeout          set connection timeout in seconds
-     * @param    integer $response_timeout set response timeout in seconds
+     * @param string  $msg              a SOAPx4 soapmsg object
+     * @param string  $soapaction       SOAPAction value
+     * @param integer $timeout          set connection timeout in seconds
+     * @param integer $response_timeout set response timeout in seconds
      *
      * @return    mixed native PHP types.
      * @access   private
@@ -511,8 +511,8 @@ class nusoap_client extends nusoap_base
     /**
      * processes SOAP message returned from server
      *
-     * @param    array  $headers The HTTP headers
-     * @param    string $data    unprocessed response data from server
+     * @param array  $headers The HTTP headers
+     * @param string $data    unprocessed response data from server
      *
      * @return    mixed    value of the message, decoded into a PHP type
      * @access   private
@@ -574,8 +574,8 @@ class nusoap_client extends nusoap_base
     /**
      * sets user-specified cURL options
      *
-     * @param    mixed $option The cURL option (always integer?)
-     * @param    mixed $value  The cURL option value
+     * @param mixed $option The cURL option (always integer?)
+     * @param mixed $value  The cURL option value
      *
      * @access   public
      */
@@ -589,7 +589,7 @@ class nusoap_client extends nusoap_base
     /**
      * sets the SOAP endpoint, which can override WSDL
      *
-     * @param    string $endpoint The endpoint URL to use, or empty string or false to prevent override
+     * @param string $endpoint The endpoint URL to use, or empty string or false to prevent override
      *
      * @access   public
      */
@@ -602,7 +602,7 @@ class nusoap_client extends nusoap_base
     /**
      * set the SOAP headers
      *
-     * @param    mixed $headers String of XML with SOAP header content, or array of soapval objects for SOAP headers
+     * @param mixed $headers String of XML with SOAP header content, or array of soapval objects for SOAP headers
      *
      * @access   public
      */
@@ -638,10 +638,10 @@ class nusoap_client extends nusoap_base
     /**
      * set proxy info here
      *
-     * @param    string $proxyhost
-     * @param    string $proxyport
-     * @param    string $proxyusername
-     * @param    string $proxypassword
+     * @param string $proxyhost
+     * @param string $proxyport
+     * @param string $proxyusername
+     * @param string $proxypassword
      *
      * @access   public
      */
@@ -656,10 +656,10 @@ class nusoap_client extends nusoap_base
     /**
      * if authenticating, set user credentials here
      *
-     * @param    string $username
-     * @param    string $password
-     * @param    string $authtype    (basic|digest|certificate|ntlm)
-     * @param    array  $certRequest (keys must be cainfofile (optional), sslcertfile, sslkeyfile, passphrase, verifypeer (optional),
+     * @param string $username
+     * @param string $password
+     * @param string $authtype       (basic|digest|certificate|ntlm)
+     * @param array  $certRequest    (keys must be cainfofile (optional), sslcertfile, sslkeyfile, passphrase, verifypeer (optional),
      *                               verifyhost (optional): see corresponding options in cURL docs)
      *
      * @access   public
@@ -677,7 +677,7 @@ class nusoap_client extends nusoap_base
     /**
      * use HTTP encoding
      *
-     * @param    string $enc HTTP encoding
+     * @param string $enc HTTP encoding
      *
      * @access   public
      */
@@ -690,7 +690,7 @@ class nusoap_client extends nusoap_base
     /**
      * Set whether to try to use cURL connections if possible
      *
-     * @param    boolean $use Whether to try to use cURL
+     * @param boolean $use Whether to try to use cURL
      *
      * @access   public
      */
@@ -734,7 +734,7 @@ class nusoap_client extends nusoap_base
      *
      * This is no longer used.
      *
-     * @param    boolean $rpcParams
+     * @param boolean $rpcParams
      *
      * @access public
      * @deprecated
@@ -927,8 +927,8 @@ class nusoap_client extends nusoap_base
     /**
      * adds a new Cookie into $this->cookies array
      *
-     * @param    string $name  Cookie Name
-     * @param    string $value Cookie Value
+     * @param string $name  Cookie Name
+     * @param string $value Cookie Value
      *
      * @return    boolean if cookie-set was successful returns true, else false
      * @access    public
@@ -991,7 +991,7 @@ class nusoap_client extends nusoap_base
     /**
      * updates the current cookies with a new set
      *
-     * @param    array $cookies new cookies with which to update current ones
+     * @param array $cookies new cookies with which to update current ones
      *
      * @return    boolean always return true
      * @access    private
@@ -1066,4 +1066,4 @@ if (!extension_loaded('soap')) {
     {
     }
 }
-?>
+

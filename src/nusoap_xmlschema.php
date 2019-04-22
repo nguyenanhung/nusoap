@@ -2,7 +2,6 @@
 
 namespace nguyenanhung\MyNuSOAP;
 
-
 /**
  * parses an XML Schema, allows access to it's data, other utility methods.
  * imperfect, no validation... yet, but quite functional.
@@ -47,9 +46,9 @@ class nusoap_xmlschema extends nusoap_base
     /**
      * constructor
      *
-     * @param    string $schema     schema document URI
-     * @param    string $xml        xml document URI
-     * @param    string $namespaces namespaces defined in enclosing XML
+     * @param string $schema     schema document URI
+     * @param string $xml        xml document URI
+     * @param string $namespaces namespaces defined in enclosing XML
      *
      * @access   public
      */
@@ -114,8 +113,8 @@ class nusoap_xmlschema extends nusoap_base
     /**
      * parse an XML string
      *
-     * @param    string $xml  path or URL
-     * @param    string $type (schema|xml)
+     * @param string $xml  path or URL
+     * @param string $type (schema|xml)
      *
      * @access   private
      */
@@ -163,7 +162,7 @@ class nusoap_xmlschema extends nusoap_base
     /**
      * gets a type name for an unnamed type
      *
-     * @param    string    Element name
+     * @param string    Element name
      *
      * @return    string    A type name for an unnamed type
      * @access    private
@@ -181,9 +180,9 @@ class nusoap_xmlschema extends nusoap_base
     /**
      * start-element handler
      *
-     * @param    string $parser XML parser object
-     * @param    string $name   element name
-     * @param    string $attrs  associative array of attributes
+     * @param string $parser XML parser object
+     * @param string $name   element name
+     * @param string $attrs  associative array of attributes
      *
      * @access   private
      */
@@ -511,8 +510,8 @@ class nusoap_xmlschema extends nusoap_base
     /**
      * end-element handler
      *
-     * @param    string $parser XML parser object
-     * @param    string $name   element name
+     * @param string $parser XML parser object
+     * @param string $name   element name
      *
      * @access   private
      */
@@ -552,8 +551,8 @@ class nusoap_xmlschema extends nusoap_base
     /**
      * element content handler
      *
-     * @param    string $parser XML parser object
-     * @param    string $data   element content
+     * @param string $parser XML parser object
+     * @param string $data   element content
      *
      * @access   private
      */
@@ -685,7 +684,7 @@ class nusoap_xmlschema extends nusoap_base
     /**
      * adds debug data to the clas level debug string
      *
-     * @param    string $string debug data
+     * @param string $string debug data
      *
      * @access   private
      */
@@ -1018,6 +1017,3 @@ class nusoap_xmlschema extends nusoap_base
 class XMLSchema extends nusoap_xmlschema
 {
 }
-
-
-?>
