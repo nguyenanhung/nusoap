@@ -2,7 +2,6 @@
 
 namespace nguyenanhung\MyNuSOAP;
 
-
 /**
  * transport class for sending/receiving data via HTTP and HTTPS
  * NOTE: PHP must be compiled with the CURL extension for HTTPS support
@@ -76,8 +75,8 @@ class soap_transport_http extends nusoap_base
     /**
      * sets a cURL option
      *
-     * @param    mixed $option The cURL option (always integer?)
-     * @param    mixed $value  The cURL option value
+     * @param mixed $option The cURL option (always integer?)
+     * @param mixed $value  The cURL option value
      *
      * @access   private
      */
@@ -182,8 +181,8 @@ class soap_transport_http extends nusoap_base
     /**
      * establish an HTTP connection
      *
-     * @param    integer $timeout          set connection timeout in seconds
-     * @param    integer $response_timeout set response timeout in seconds
+     * @param integer $timeout          set connection timeout in seconds
+     * @param integer $response_timeout set response timeout in seconds
      *
      * @return    boolean true if connected, false if not
      * @access   private
@@ -424,10 +423,10 @@ class soap_transport_http extends nusoap_base
     /**
      * sends the SOAP request and gets the SOAP response via HTTP[S]
      *
-     * @param    string  $data             message data
-     * @param    integer $timeout          set connection timeout in seconds
-     * @param    integer $response_timeout set response timeout in seconds
-     * @param    array   $cookies          cookies to send
+     * @param string  $data             message data
+     * @param integer $timeout          set connection timeout in seconds
+     * @param integer $response_timeout set response timeout in seconds
+     * @param array   $cookies          cookies to send
      *
      * @return    string data
      * @access   public
@@ -463,14 +462,13 @@ class soap_transport_http extends nusoap_base
         return $respdata;
     }
 
-
     /**
      * sends the SOAP request and gets the SOAP response via HTTPS using CURL
      *
-     * @param    string  $data             message data
-     * @param    integer $timeout          set connection timeout in seconds
-     * @param    integer $response_timeout set response timeout in seconds
-     * @param    array   $cookies          cookies to send
+     * @param string  $data             message data
+     * @param integer $timeout          set connection timeout in seconds
+     * @param integer $response_timeout set response timeout in seconds
+     * @param array   $cookies          cookies to send
      *
      * @return    string data
      * @access   public
@@ -484,11 +482,11 @@ class soap_transport_http extends nusoap_base
     /**
      * if authenticating, set user credentials here
      *
-     * @param    string $username
-     * @param    string $password
-     * @param    string $authtype      (basic|digest|certificate|ntlm)
-     * @param    array  $digestRequest (keys must be nonce, nc, realm, qop)
-     * @param    array  $certRequest   (keys must be cainfofile (optional), sslcertfile, sslkeyfile, passphrase, certpassword (optional),
+     * @param string $username
+     * @param string $password
+     * @param string $authtype         (basic|digest|certificate|ntlm)
+     * @param array  $digestRequest    (keys must be nonce, nc, realm, qop)
+     * @param array  $certRequest      (keys must be cainfofile (optional), sslcertfile, sslkeyfile, passphrase, certpassword (optional),
      *                                 verifypeer (optional), verifyhost (optional): see corresponding options in cURL docs)
      *
      * @access   public
@@ -565,7 +563,7 @@ class soap_transport_http extends nusoap_base
     /**
      * set the soapaction value
      *
-     * @param    string $soapaction
+     * @param string $soapaction
      *
      * @access   public
      */
@@ -577,7 +575,7 @@ class soap_transport_http extends nusoap_base
     /**
      * use http encoding
      *
-     * @param    string $enc encoding style. supported values: gzip, deflate, or both
+     * @param string $enc encoding style. supported values: gzip, deflate, or both
      *
      * @access   public
      */
@@ -599,11 +597,11 @@ class soap_transport_http extends nusoap_base
     /**
      * set proxy info here
      *
-     * @param    string $proxyhost     use an empty string to remove proxy
-     * @param    string $proxyport
-     * @param    string $proxyusername
-     * @param    string $proxypassword
-     * @param    string $proxyauthtype (basic|ntlm)
+     * @param string $proxyhost     use an empty string to remove proxy
+     * @param string $proxyport
+     * @param string $proxyusername
+     * @param string $proxypassword
+     * @param string $proxyauthtype (basic|ntlm)
      *
      * @access   public
      */
@@ -627,12 +625,11 @@ class soap_transport_http extends nusoap_base
         }
     }
 
-
     /**
      * Test if the given string starts with a header that is to be skipped.
      * Skippable headers result from chunked transfer and proxy requests.
      *
-     * @param    string $data The string to check.
+     * @param string $data The string to check.
      *
      * @returns    boolean    Whether a skippable header was found.
      * @access    private
@@ -659,8 +656,8 @@ class soap_transport_http extends nusoap_base
      * decode a string that is encoded w/ "chunked' transfer encoding
      * as defined in RFC2068 19.4.6
      *
-     * @param    string $buffer
-     * @param    string $lb
+     * @param string $buffer
+     * @param string $lb
      *
      * @returns    string
      * @access   public
@@ -721,8 +718,8 @@ class soap_transport_http extends nusoap_base
     /**
      * Writes the payload, including HTTP headers, to $this->outgoing_payload.
      *
-     * @param    string $data       HTTP body
-     * @param    string $cookie_str data for HTTP Cookie header
+     * @param string $data       HTTP body
+     * @param string $cookie_str data for HTTP Cookie header
      *
      * @return    void
      * @access    private
@@ -772,8 +769,8 @@ class soap_transport_http extends nusoap_base
     /**
      * sends the SOAP request via HTTP[S]
      *
-     * @param    string $data    message data
-     * @param    array  $cookies cookies to send
+     * @param string $data    message data
+     * @param array  $cookies cookies to send
      *
      * @return    boolean    true if OK, false if problem
      * @access   private
@@ -1228,8 +1225,8 @@ class soap_transport_http extends nusoap_base
     /**
      * sets the content-type for the SOAP message to be sent
      *
-     * @param    string $type    the content type, MIME style
-     * @param    mixed  $charset character set used for encoding (or false)
+     * @param string $type    the content type, MIME style
+     * @param mixed  $charset character set used for encoding (or false)
      *
      * @access    public
      */
@@ -1259,7 +1256,7 @@ class soap_transport_http extends nusoap_base
     /**
      * parse an incoming Cookie into it's parts
      *
-     * @param    string $cookie_str content of cookie
+     * @param string $cookie_str content of cookie
      *
      * @return    array with data of that cookie
      * @access    private
@@ -1329,8 +1326,8 @@ class soap_transport_http extends nusoap_base
     /**
      * sort out cookies for the current request
      *
-     * @param    array   $cookies array with all cookies
-     * @param    boolean $secure  is the send-content secure or not?
+     * @param array   $cookies array with all cookies
+     * @param boolean $secure  is the send-content secure or not?
      *
      * @return    string for Cookie-HTTP-Header
      * @access    private
@@ -1376,6 +1373,3 @@ class soap_transport_http extends nusoap_base
         return $cookie_str;
     }
 }
-
-
-?>

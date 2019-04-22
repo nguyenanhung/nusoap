@@ -1,5 +1,7 @@
 <?php
+
 namespace nguyenanhung\MyNuSOAP;
+
 /*
 The NuSOAP project home is:
 http://sourceforge.net/projects/nusoap/
@@ -70,7 +72,7 @@ class nusoap_wsdlcache
     /**
      * adds debug data to the class level debug string
      *
-     * @param    string $string debug data
+     * @param string $string debug data
      *
      * @access   private
      */
@@ -237,4 +239,3 @@ class wsdlcache extends nusoap_wsdlcache
 {
 }
 
-?>

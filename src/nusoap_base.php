@@ -1,5 +1,7 @@
 <?php
+
 namespace nguyenanhung\MyNuSOAP;
+
 /*
 $Id: class.nusoap_base.php,v 1.56 2010/04/26 20:15:08 snichol Exp $
 
@@ -247,7 +249,7 @@ class nusoap_base
     /**
      * sets the global debug level, which applies to future instances
      *
-     * @param    int $level Debug level 0-9, where 0 turns off
+     * @param int $level Debug level 0-9, where 0 turns off
      *
      * @access    public
      */
@@ -270,7 +272,7 @@ class nusoap_base
     /**
      * sets the debug level for this instance
      *
-     * @param    int $level Debug level 0-9, where 0 turns off
+     * @param int $level Debug level 0-9, where 0 turns off
      *
      * @access    public
      */
@@ -282,7 +284,7 @@ class nusoap_base
     /**
      * adds debug data to the instance debug string with formatting
      *
-     * @param    string $string debug data
+     * @param string $string debug data
      *
      * @access   private
      */
@@ -296,7 +298,7 @@ class nusoap_base
     /**
      * adds debug data to the instance debug string without formatting
      *
-     * @param    string $string debug data
+     * @param string $string debug data
      *
      * @access   public
      */
@@ -356,7 +358,7 @@ class nusoap_base
     /**
      * expands entities, e.g. changes '<' to '&lt;'.
      *
-     * @param    string $val The string in which to expand entities.
+     * @param string $val The string in which to expand entities.
      *
      * @access    private
      */
@@ -402,7 +404,7 @@ class nusoap_base
     /**
      * detect if array is a simple array or a struct (associative array)
      *
-     * @param    mixed $val The PHP array
+     * @param mixed $val The PHP array
      *
      * @return    string    (arraySimple|arrayStruct)
      * @access    private
@@ -423,14 +425,14 @@ class nusoap_base
      * serializes PHP values in accordance w/ section 5. Type information is
      * not serialized if $use == 'literal'.
      *
-     * @param    mixed   $val        The value to serialize
-     * @param    string  $name       The name (local part) of the XML element
-     * @param    string  $type       The XML schema type (local part) for the element
-     * @param    string  $name_ns    The namespace for the name of the XML element
-     * @param    string  $type_ns    The namespace for the type of the element
-     * @param    array   $attributes The attributes to serialize as name=>value pairs
-     * @param    string  $use        The WSDL "use" (encoded|literal)
-     * @param    boolean $soapval    Whether this is called from soapval.
+     * @param mixed   $val        The value to serialize
+     * @param string  $name       The name (local part) of the XML element
+     * @param string  $type       The XML schema type (local part) for the element
+     * @param string  $name_ns    The namespace for the name of the XML element
+     * @param string  $type_ns    The namespace for the type of the element
+     * @param array   $attributes The attributes to serialize as name=>value pairs
+     * @param string  $use        The WSDL "use" (encoded|literal)
+     * @param boolean $soapval    Whether this is called from soapval.
      *
      * @return    string    The serialized element, possibly with child elements
      * @access    public
@@ -781,7 +783,7 @@ class nusoap_base
     /**
      * contracts (changes namespace to prefix) a qualified name
      *
-     * @param    string $qname qname
+     * @param string $qname qname
      *
      * @return    string contracted qname
      * @access   private
@@ -809,7 +811,7 @@ class nusoap_base
     /**
      * expands (changes prefix to namespace) a qualified name
      *
-     * @param    string $qname qname
+     * @param string $qname qname
      *
      * @return    string expanded qname
      * @access   private
@@ -967,8 +969,8 @@ class nusoap_base
 /**
  * convert unix timestamp to ISO 8601 compliant date string
  *
- * @param    int     $timestamp Unix time stamp
- * @param    boolean $utc       Whether the time stamp is UTC or local
+ * @param int     $timestamp Unix time stamp
+ * @param boolean $utc       Whether the time stamp is UTC or local
  *
  * @return    mixed ISO 8601 date string or false
  * @access   public
@@ -1010,7 +1012,7 @@ function timestamp_to_iso8601($timestamp, $utc = TRUE)
 /**
  * convert ISO 8601 compliant date string to unix timestamp
  *
- * @param    string $datestr ISO 8601 compliant date string
+ * @param string $datestr ISO 8601 compliant date string
  *
  * @return    mixed Unix timestamp (int) or false
  * @access   public
@@ -1052,7 +1054,7 @@ function iso8601_to_timestamp($datestr)
 /**
  * sleeps some number of microseconds
  *
- * @param    string $usec the number of microseconds to sleep
+ * @param string $usec the number of microseconds to sleep
  *
  * @access   public
  * @deprecated
