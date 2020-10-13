@@ -9,7 +9,7 @@
  *	Transport: http
  *	Authentication: none
  */
-require_once('../lib/nusoap.php');
+require_once('../classes/nusoap.php');
 require_once('../lib/class.wsdlcache.php');
 $proxyhost = isset($_POST['proxyhost']) ? $_POST['proxyhost'] : '';
 $proxyport = isset($_POST['proxyport']) ? $_POST['proxyport'] : '';

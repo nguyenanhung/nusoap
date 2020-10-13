@@ -1,6 +1,6 @@
 <?php
 
-namespace nguyenanhung\MyNuSOAP;
+namespace nguyenanhung\MyFixNuSOAP;
 
 /*
 $Id: class.nusoap_base.php,v 1.56 2010/04/26 20:15:08 snichol Exp $
@@ -75,13 +75,14 @@ require_once('class.soap_server.php');*/
 // cf. http://www.webkreator.com/php/techniques/php-static-class-variables.html
 $GLOBALS['_transient']['static']['nusoap_base']['globalDebugLevel'] = 9;
 
+
 /**
  *
  * nusoap_base
  *
  * @author   Dietrich Ayala <dietrich@ganx4.com>
  * @author   Scott Nichol <snichol@users.sourceforge.net>
- * @version  $Id: class.nusoap_base.php,v 1.56 2010/04/26 20:15:08 snichol Exp $
+ * @version  $Id: nusoap.php,v 1.123 2010/04/26 20:15:08 snichol Exp $
  * @access   public
  */
 class nusoap_base
@@ -99,14 +100,14 @@ class nusoap_base
      * @var string
      * @access private
      */
-    var $version = '0.9.5';
+    var $version = '0.9.11';
     /**
      * CVS revision for HTTP headers.
      *
      * @var string
      * @access private
      */
-    var $revision = '$Revision: 1.56 $';
+    var $revision = '$Revision: 1.123 $';
     /**
      * Current error string (manipulated by getError/setError)
      *
@@ -162,12 +163,12 @@ class nusoap_base
      * @var      array
      * @access   public
      */
-    var $namespaces = [
+    var $namespaces = array(
         'SOAP-ENV' => 'http://schemas.xmlsoap.org/soap/envelope/',
         'xsd'      => 'http://www.w3.org/2001/XMLSchema',
         'xsi'      => 'http://www.w3.org/2001/XMLSchema-instance',
         'SOAP-ENC' => 'http://schemas.xmlsoap.org/soap/encoding/'
-    ];
+    );
 
     /**
      * namespaces used in the current context, e.g. during serialization
@@ -175,7 +176,7 @@ class nusoap_base
      * @var      array
      * @access   private
      */
-    var $usedNamespaces = [];
+    var $usedNamespaces = array();
 
     /**
      * XML Schema types in an array of uri => (array of xml type => php type)
@@ -185,34 +186,30 @@ class nusoap_base
      * @var      array
      * @access   public
      */
-    var $typemap = [
-        'http://www.w3.org/2001/XMLSchema'          => [
-            'string'             => 'string', 'boolean' => 'boolean', 'float' => 'double', 'double' => 'double', 'decimal' => 'double',
-            'duration'           => '', 'dateTime' => 'string', 'time' => 'string', 'date' => 'string', 'gYearMonth' => '',
-            'gYear'              => '', 'gMonthDay' => '', 'gDay' => '', 'gMonth' => '', 'hexBinary' => 'string',
-            'base64Binary'       => 'string',
+    var $typemap = array(
+        'http://www.w3.org/2001/XMLSchema'          => array(
+            'string'           => 'string', 'boolean' => 'boolean', 'float' => 'double', 'double' => 'double', 'decimal' => 'double',
+            'duration'         => '', 'dateTime' => 'string', 'time' => 'string', 'date' => 'string', 'gYearMonth' => '',
+            'gYear'            => '', 'gMonthDay' => '', 'gDay' => '', 'gMonth' => '', 'hexBinary' => 'string', 'base64Binary' => 'string',
             // abstract "any" types
-            'anyType'            => 'string', 'anySimpleType' => 'string',
+            'anyType'          => 'string', 'anySimpleType' => 'string',
             // derived datatypes
-            'normalizedString'   => 'string', 'token' => 'string', 'language' => '', 'NMTOKEN' => '', 'NMTOKENS' => '', 'Name' => '',
-            'NCName'             => '', 'ID' => '',
-            'IDREF'              => '', 'IDREFS' => '', 'ENTITY' => '', 'ENTITIES' => '', 'integer' => 'integer',
-            'nonPositiveInteger' => 'integer',
-            'negativeInteger'    => 'integer', 'long' => 'integer', 'int' => 'integer', 'short' => 'integer', 'byte' => 'integer',
-            'nonNegativeInteger' => 'integer',
-            'unsignedLong'       => '', 'unsignedInt' => '', 'unsignedShort' => '', 'unsignedByte' => '', 'positiveInteger' => ''],
-        'http://www.w3.org/2000/10/XMLSchema'       => [
+            'normalizedString' => 'string', 'token' => 'string', 'language' => '', 'NMTOKEN' => '', 'NMTOKENS' => '', 'Name' => '', 'NCName' => '', 'ID' => '',
+            'IDREF'            => '', 'IDREFS' => '', 'ENTITY' => '', 'ENTITIES' => '', 'integer' => 'integer', 'nonPositiveInteger' => 'integer',
+            'negativeInteger'  => 'integer', 'long' => 'integer', 'int' => 'integer', 'short' => 'integer', 'byte' => 'integer', 'nonNegativeInteger' => 'integer',
+            'unsignedLong'     => '', 'unsignedInt' => '', 'unsignedShort' => '', 'unsignedByte' => '', 'positiveInteger' => ''),
+        'http://www.w3.org/2000/10/XMLSchema'       => array(
             'i4'          => '', 'int' => 'integer', 'boolean' => 'boolean', 'string' => 'string', 'double' => 'double',
             'float'       => 'double', 'dateTime' => 'string',
-            'timeInstant' => 'string', 'base64Binary' => 'string', 'base64' => 'string', 'ur-type' => 'array'],
-        'http://www.w3.org/1999/XMLSchema'          => [
+            'timeInstant' => 'string', 'base64Binary' => 'string', 'base64' => 'string', 'ur-type' => 'array'),
+        'http://www.w3.org/1999/XMLSchema'          => array(
             'i4'          => '', 'int' => 'integer', 'boolean' => 'boolean', 'string' => 'string', 'double' => 'double',
             'float'       => 'double', 'dateTime' => 'string',
-            'timeInstant' => 'string', 'base64Binary' => 'string', 'base64' => 'string', 'ur-type' => 'array'],
-        'http://soapinterop.org/xsd'                => ['SOAPStruct' => 'struct'],
-        'http://schemas.xmlsoap.org/soap/encoding/' => ['base64' => 'string', 'array' => 'array', 'Array' => 'array'],
-        'http://xml.apache.org/xml-soap'            => ['Map']
-    ];
+            'timeInstant' => 'string', 'base64Binary' => 'string', 'base64' => 'string', 'ur-type' => 'array'),
+        'http://soapinterop.org/xsd'                => array('SOAPStruct' => 'struct'),
+        'http://schemas.xmlsoap.org/soap/encoding/' => array('base64' => 'string', 'array' => 'array', 'Array' => 'array'),
+        'http://xml.apache.org/xml-soap'            => array('Map')
+    );
 
     /**
      * XML entities to convert
@@ -222,8 +219,16 @@ class nusoap_base
      * @deprecated
      * @see      expandEntities
      */
-    var $xmlEntities = ['quot' => '"', 'amp' => '&',
-                        'lt'   => '<', 'gt' => '>', 'apos' => "'"];
+    var $xmlEntities = array('quot' => '"', 'amp' => '&',
+                             'lt'   => '<', 'gt' => '>', 'apos' => "'");
+
+    /**
+     * HTTP Content-type to be used for SOAP calls and responses
+     *
+     * @var string
+     */
+    var $contentType = "text/xml";
+
 
     /**
      * constructor
@@ -324,10 +329,12 @@ class nusoap_base
     }
 
     /**
-     * gets the current debug data for this instance
+     * Function getDebug - gets the current debug data for this instance
      *
-     * @return   debug data
-     * @access   public
+     * @return string
+     * @author   : 713uk13m <dev@nguyenanhung.com>
+     * @copyright: 713uk13m <dev@nguyenanhung.com>
+     * @time     : 10/14/2020 08:35
      */
     function &getDebug()
     {
@@ -337,11 +344,12 @@ class nusoap_base
     }
 
     /**
-     * gets the current debug data for this instance as an XML comment
-     * this may change the contents of the debug data
+     * Function getDebugAsXMLComment - gets the current debug data for this instance as an XML comment this may change the contents of the debug data
      *
-     * @return   debug data as an XML comment
-     * @access   public
+     * @return string
+     * @author   : 713uk13m <dev@nguyenanhung.com>
+     * @copyright: 713uk13m <dev@nguyenanhung.com>
+     * @time     : 10/14/2020 08:09
      */
     function &getDebugAsXMLComment()
     {
@@ -356,11 +364,14 @@ class nusoap_base
     }
 
     /**
-     * expands entities, e.g. changes '<' to '&lt;'.
+     * Function expandEntities -  expands entities, e.g. changes '<' to '&lt;'.
      *
      * @param string $val The string in which to expand entities.
      *
-     * @access    private
+     * @return string|string[]
+     * @author   : 713uk13m <dev@nguyenanhung.com>
+     * @copyright: 713uk13m <dev@nguyenanhung.com>
+     * @time     : 10/14/2020 08:44
      */
     function expandEntities($val)
     {
@@ -391,10 +402,13 @@ class nusoap_base
     }
 
     /**
-     * sets error string
+     * Function setError - sets error string
      *
-     * @return   boolean $string error string
-     * @access   private
+     * @param $str
+     *
+     * @author   : 713uk13m <dev@nguyenanhung.com>
+     * @copyright: 713uk13m <dev@nguyenanhung.com>
+     * @time     : 10/14/2020 09:18
      */
     function setError($str)
     {
@@ -425,21 +439,21 @@ class nusoap_base
      * serializes PHP values in accordance w/ section 5. Type information is
      * not serialized if $use == 'literal'.
      *
-     * @param mixed   $val        The value to serialize
-     * @param string  $name       The name (local part) of the XML element
-     * @param string  $type       The XML schema type (local part) for the element
-     * @param string  $name_ns    The namespace for the name of the XML element
-     * @param string  $type_ns    The namespace for the type of the element
-     * @param array   $attributes The attributes to serialize as name=>value pairs
-     * @param string  $use        The WSDL "use" (encoded|literal)
-     * @param boolean $soapval    Whether this is called from soapval.
+     * @param mixed       $val        The value to serialize
+     * @param string|bool $name       The name (local part) of the XML element
+     * @param string|bool $type       The XML schema type (local part) for the element
+     * @param string|bool $name_ns    The namespace for the name of the XML element
+     * @param string|bool $type_ns    The namespace for the type of the element
+     * @param array|bool  $attributes The attributes to serialize as name=>value pairs
+     * @param string      $use        The WSDL "use" (encoded|literal)
+     * @param boolean     $soapval    Whether this is called from soapval.
      *
      * @return    string    The serialized element, possibly with child elements
      * @access    public
      */
-    function serialize_val(
-        $val, $name = FALSE, $type = FALSE, $name_ns = FALSE, $type_ns = FALSE, $attributes = FALSE, $use = 'encoded', $soapval = FALSE
-    ) {
+
+    function serialize_val($val, $name = FALSE, $type = FALSE, $name_ns = FALSE, $type_ns = FALSE, $attributes = FALSE, $use = 'encoded', $soapval = FALSE)
+    {
         $this->debug("in serialize_val: name=$name, type=$type, name_ns=$name_ns, type_ns=$type_ns, use=$use, soapval=$soapval");
         $this->appendDebug('value=' . $this->varDump($val));
         $this->appendDebug('attributes=' . $this->varDump($attributes));
@@ -597,7 +611,6 @@ class nusoap_base
                     $xml .= "<$name$xmlns$type_str$atts>$pXml</$name>";
                 }
                 break;
-                break;
             case (is_array($val) || $type):
                 // detect if struct or array
                 $valueType = $this->isArraySimpleOrStruct($val);
@@ -703,8 +716,7 @@ class nusoap_base
      * serializes a message
      *
      * @param string $body          the XML of the SOAP body
-     * @param mixed  $headers       optional string of XML with SOAP header content, or array of soapval objects for SOAP headers, or
-     *                              associative array
+     * @param mixed  $headers       optional string of XML with SOAP header content, or array of soapval objects for SOAP headers, or associative array
      * @param array  $namespaces    optional the namespaces used in generating the body and headers
      * @param string $style         optional (rpc|document)
      * @param string $use           optional (encoded|literal)
@@ -713,10 +725,8 @@ class nusoap_base
      * @return string the message
      * @access public
      */
-    function serializeEnvelope(
-        $body, $headers = FALSE, $namespaces = [], $style = 'rpc', $use = 'encoded',
-        $encodingStyle = 'http://schemas.xmlsoap.org/soap/encoding/'
-    ) {
+    function serializeEnvelope($body, $headers = FALSE, $namespaces = array(), $style = 'rpc', $use = 'encoded', $encodingStyle = 'http://schemas.xmlsoap.org/soap/encoding/')
+    {
         // TODO: add an option to automatically run utf8_encode on $body and $headers
         // if $this->soap_defencoding is UTF-8.  Not doing this automatically allows
         // one to send arbitrary UTF-8 characters, not just characters that map to ISO-8859-1

@@ -8,7 +8,7 @@ namespace nguyenanhung\MyNuSOAP;
  * in a server instance.
  *
  * @author   Dietrich Ayala <dietrich@ganx4.com>
- * @version  $Id: class.soap_fault.php,v 1.14 2007/04/11 15:49:47 snichol Exp $
+ * @version  $Id: nusoap.php,v 1.123 2010/04/26 20:15:08 snichol Exp $
  * @access   public
  */
 class nusoap_fault extends nusoap_base
@@ -87,6 +87,7 @@ class nusoap_fault extends nusoap_base
         return $return_msg;
     }
 }
+
 
 /**
  * Backward compatibility

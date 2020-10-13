@@ -1,12 +1,10 @@
 {
     "name": "nguyenanhung/nusoap",
     "type": "library",
-    "description": "My nuSOAP Library, fix code for Php >= 5.4 <= 7.4",
+    "description": "My nuSOAP Library, fix code for for PHP 7.4 <=> 5.4",
     "keywords": [
-        "request",
-        "http",
-        "curl",
-        "get_content"
+        "soap",
+        "nusoap"
     ],
     "homepage": "https://github.com/nguyenanhung/nusoap",
     "license": "LGPL-2.1-only",
