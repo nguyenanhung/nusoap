@@ -1,7 +1,7 @@
 {
     "name": "nguyenanhung/nusoap",
     "type": "library",
-    "description": "My nuSOAP Library, fix code for Php >= 5.4",
+    "description": "My nuSOAP Library, fix code for Php >= 5.4 <= 7.4",
     "keywords": [
         "request",
         "http",
@@ -9,7 +9,7 @@
         "get_content"
     ],
     "homepage": "https://github.com/nguyenanhung/nusoap",
-    "license": "LGPL-2.1",
+    "license": "LGPL-2.1-only",
     "authors": [
         {
             "name": "Dietrich Ayala",
@@ -27,12 +27,12 @@
         }
     ],
     "require": {
-        "php": ">=5.2"
+        "php": ">=5.4"
     },
     "autoload": {
         "psr-4": {
             "nguyenanhung\\MyNuSOAP\\": "src/",
-            "nguyenanhung\\MyFixNuSOAP\\": "src-fix/"
+            "nguyenanhung\\MyFixNuSOAP\\": "src2/"
         }
     }
 }
