@@ -11,11 +11,11 @@
     "authors": [
         {
             "name": "Dietrich Ayala",
-            "homepage": "http://sourceforge.net/u/dietricha/profile/"
+            "homepage": "https://sourceforge.net/u/dietricha/profile/"
         },
         {
             "name": "Scott Nichol",
-            "homepage": "http://sourceforge.net/u/snichol/profile/"
+            "homepage": "https://sourceforge.net/u/snichol/profile/"
         },
         {
             "name": "Nguyen An Hung",
@@ -30,7 +30,10 @@
     "autoload": {
         "psr-4": {
             "nguyenanhung\\MyNuSOAP\\": "src/",
-            "nguyenanhung\\MyFixNuSOAP\\": "src2/"
-        }
+            "nguyenanhung\\MyFixNuSOAP\\": "fixed/"
+        },
+        "files": [
+            "helpers/functions.php"
+        ]
     }
 }

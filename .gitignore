@@ -119,6 +119,8 @@ GitHub.sublime-settings
 
 ## Composer
 /vendor/
+composer.lock
+composer.phar
 
 /logs/*
 !/logs/index.html

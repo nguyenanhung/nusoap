@@ -9,7 +9,7 @@ namespace nguyenanhung\MyFixNuSOAP;
  *
  * @author   Dietrich Ayala <dietrich@ganx4.com>
  * @version  $Id: nusoap.php,v 1.123 2010/04/26 20:15:08 snichol Exp $
- * @access   public
+ * @access public
  */
 class nusoap_fault extends nusoap_base
 {
@@ -45,16 +45,16 @@ class nusoap_fault extends nusoap_base
     /**
      * constructor
      *
-     * @param string $faultcode   (SOAP-ENV:Client | SOAP-ENV:Server)
-     * @param string $faultactor  only used when msg routed between multiple actors
+     * @param string $faultcode (SOAP-ENV:Client | SOAP-ENV:Server)
+     * @param string $faultactor only used when msg routed between multiple actors
      * @param string $faultstring human readable error message
-     * @param mixed  $faultdetail detail, typically a string or array of string
+     * @param mixed $faultdetail detail, typically a string or array of string
      */
     function __construct($faultcode, $faultactor = '', $faultstring = '', $faultdetail = '')
     {
         parent::__construct();
-        $this->faultcode   = $faultcode;
-        $this->faultactor  = $faultactor;
+        $this->faultcode = $faultcode;
+        $this->faultactor = $faultactor;
         $this->faultstring = $faultstring;
         $this->faultdetail = $faultdetail;
     }
@@ -77,13 +77,12 @@ class nusoap_fault extends nusoap_base
             '<SOAP-ENV:Body>' .
             '<SOAP-ENV:Fault>' .
             $this->serialize_val($this->faultcode, 'faultcode') .
-            $this->serialize_val($this->faultactor, 'faultactor') .
             $this->serialize_val($this->faultstring, 'faultstring') .
+            $this->serialize_val($this->faultactor, 'faultactor') .
             $this->serialize_val($this->faultdetail, 'detail') .
             '</SOAP-ENV:Fault>' .
             '</SOAP-ENV:Body>' .
             '</SOAP-ENV:Envelope>';
-
         return $return_msg;
     }
 }
