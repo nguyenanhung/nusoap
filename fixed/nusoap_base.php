@@ -386,9 +386,10 @@ class nusoap_base
      * @return   mixed error string or false
      * @access   public
      */
+
     function getError()
     {
-        if ($this->error_str != '') {
+        if ($this->error_str !== '') {
             return $this->error_str;
         }
 
@@ -396,10 +397,13 @@ class nusoap_base
     }
 
     /**
-     * sets error string
+     * Function setError sets error string
      *
-     * @return   boolean $string error string
-     * @access   private
+     * @param $str
+     *
+     * @author   : 713uk13m <dev@nguyenanhung.com>
+     * @copyright: 713uk13m <dev@nguyenanhung.com>
+     * @time     : 09/25/2021 11:55
      */
     function setError($str)
     {
@@ -448,7 +452,7 @@ class nusoap_base
         $this->appendDebug('value=' . $this->varDump($val));
         $this->appendDebug('attributes=' . $this->varDump($attributes));
 
-        if (is_object($val) && get_class($val) == 'soapval' && (!$soapval)) {
+        if (is_object($val) && $val instanceof \soapval && (!$soapval)) {
             $this->debug("serialize_val: serialize soapval");
             $xml = $val->serialize($use);
             $this->appendDebug($val->getDebug());
@@ -466,7 +470,7 @@ class nusoap_base
         // if name has ns, add ns prefix to name
         $xmlns = '';
         if ($name_ns) {
-            $prefix = 'nu' . rand(1000, 9999);
+            $prefix = 'nu' . mt_rand(1000, 9999);
             $name   = $prefix . ':' . $name;
             $xmlns  .= " xmlns:$prefix=\"$name_ns\"";
         }
@@ -476,7 +480,7 @@ class nusoap_base
             // w/o checking against typemap
             $type_prefix = 'xsd';
         } elseif ($type_ns) {
-            $type_prefix = 'ns' . rand(1000, 9999);
+            $type_prefix = 'ns' . mt_rand(1000, 9999);
             $xmlns       .= " xmlns:$type_prefix=\"$type_ns\"";
         }
         // serialize attributes if present
