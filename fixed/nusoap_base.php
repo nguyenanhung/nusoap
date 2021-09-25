@@ -165,8 +165,8 @@ class nusoap_base
      */
     var $namespaces = array(
         'SOAP-ENV' => 'http://schemas.xmlsoap.org/soap/envelope/',
-        'xsd' => 'http://www.w3.org/2001/XMLSchema',
-        'xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+        'xsd'      => 'http://www.w3.org/2001/XMLSchema',
+        'xsi'      => 'http://www.w3.org/2001/XMLSchema-instance',
         'SOAP-ENC' => 'http://schemas.xmlsoap.org/soap/encoding/'
     );
 
@@ -187,28 +187,28 @@ class nusoap_base
      * @access   public
      */
     var $typemap = array(
-        'http://www.w3.org/2001/XMLSchema' => array(
-            'string' => 'string', 'boolean' => 'boolean', 'float' => 'double', 'double' => 'double', 'decimal' => 'double',
-            'duration' => '', 'dateTime' => 'string', 'time' => 'string', 'date' => 'string', 'gYearMonth' => '',
-            'gYear' => '', 'gMonthDay' => '', 'gDay' => '', 'gMonth' => '', 'hexBinary' => 'string', 'base64Binary' => 'string',
+        'http://www.w3.org/2001/XMLSchema'          => array(
+            'string'           => 'string', 'boolean' => 'boolean', 'float' => 'double', 'double' => 'double', 'decimal' => 'double',
+            'duration'         => '', 'dateTime' => 'string', 'time' => 'string', 'date' => 'string', 'gYearMonth' => '',
+            'gYear'            => '', 'gMonthDay' => '', 'gDay' => '', 'gMonth' => '', 'hexBinary' => 'string', 'base64Binary' => 'string',
             // abstract "any" types
-            'anyType' => 'string', 'anySimpleType' => 'string',
+            'anyType'          => 'string', 'anySimpleType' => 'string',
             // derived datatypes
             'normalizedString' => 'string', 'token' => 'string', 'language' => '', 'NMTOKEN' => '', 'NMTOKENS' => '', 'Name' => '', 'NCName' => '', 'ID' => '',
-            'IDREF' => '', 'IDREFS' => '', 'ENTITY' => '', 'ENTITIES' => '', 'integer' => 'integer', 'nonPositiveInteger' => 'integer',
-            'negativeInteger' => 'integer', 'long' => 'integer', 'int' => 'integer', 'short' => 'integer', 'byte' => 'integer', 'nonNegativeInteger' => 'integer',
-            'unsignedLong' => '', 'unsignedInt' => '', 'unsignedShort' => '', 'unsignedByte' => '', 'positiveInteger' => ''),
-        'http://www.w3.org/2000/10/XMLSchema' => array(
-            'i4' => '', 'int' => 'integer', 'boolean' => 'boolean', 'string' => 'string', 'double' => 'double',
-            'float' => 'double', 'dateTime' => 'string',
+            'IDREF'            => '', 'IDREFS' => '', 'ENTITY' => '', 'ENTITIES' => '', 'integer' => 'integer', 'nonPositiveInteger' => 'integer',
+            'negativeInteger'  => 'integer', 'long' => 'integer', 'int' => 'integer', 'short' => 'integer', 'byte' => 'integer', 'nonNegativeInteger' => 'integer',
+            'unsignedLong'     => '', 'unsignedInt' => '', 'unsignedShort' => '', 'unsignedByte' => '', 'positiveInteger' => ''),
+        'http://www.w3.org/2000/10/XMLSchema'       => array(
+            'i4'          => '', 'int' => 'integer', 'boolean' => 'boolean', 'string' => 'string', 'double' => 'double',
+            'float'       => 'double', 'dateTime' => 'string',
             'timeInstant' => 'string', 'base64Binary' => 'string', 'base64' => 'string', 'ur-type' => 'array'),
-        'http://www.w3.org/1999/XMLSchema' => array(
-            'i4' => '', 'int' => 'integer', 'boolean' => 'boolean', 'string' => 'string', 'double' => 'double',
-            'float' => 'double', 'dateTime' => 'string',
+        'http://www.w3.org/1999/XMLSchema'          => array(
+            'i4'          => '', 'int' => 'integer', 'boolean' => 'boolean', 'string' => 'string', 'double' => 'double',
+            'float'       => 'double', 'dateTime' => 'string',
             'timeInstant' => 'string', 'base64Binary' => 'string', 'base64' => 'string', 'ur-type' => 'array'),
-        'http://soapinterop.org/xsd' => array('SOAPStruct' => 'struct'),
+        'http://soapinterop.org/xsd'                => array('SOAPStruct' => 'struct'),
         'http://schemas.xmlsoap.org/soap/encoding/' => array('base64' => 'string', 'array' => 'array', 'Array' => 'array'),
-        'http://xml.apache.org/xml-soap' => array('Map')
+        'http://xml.apache.org/xml-soap'            => array('Map')
     );
 
     /**
@@ -217,10 +217,10 @@ class nusoap_base
      * @var      array
      * @access   public
      * @deprecated
-     * @see    expandEntities
+     * @see      expandEntities
      */
     var $xmlEntities = array('quot' => '"', 'amp' => '&',
-                             'lt' => '<', 'gt' => '>', 'apos' => "'");
+                             'lt'   => '<', 'gt' => '>', 'apos' => "'");
 
     /**
      * HTTP Content-type to be used for SOAP calls and responses
@@ -254,7 +254,8 @@ class nusoap_base
     /**
      * sets the global debug level, which applies to future instances
      *
-     * @param    int $level Debug level 0-9, where 0 turns off
+     * @param int $level Debug level 0-9, where 0 turns off
+     *
      * @access    public
      */
     function setGlobalDebugLevel($level)
@@ -276,7 +277,8 @@ class nusoap_base
     /**
      * sets the debug level for this instance
      *
-     * @param    int $level Debug level 0-9, where 0 turns off
+     * @param int $level Debug level 0-9, where 0 turns off
+     *
      * @access    public
      */
     function setDebugLevel($level)
@@ -287,7 +289,8 @@ class nusoap_base
     /**
      * adds debug data to the instance debug string with formatting
      *
-     * @param    string $string debug data
+     * @param string $string debug data
+     *
      * @access   private
      */
     function debug($string)
@@ -300,7 +303,8 @@ class nusoap_base
     /**
      * adds debug data to the instance debug string without formatting
      *
-     * @param    string $string debug data
+     * @param string $string debug data
+     *
      * @access   public
      */
     function appendDebug($string)
@@ -327,7 +331,7 @@ class nusoap_base
     /**
      * gets the current debug data for this instance
      *
-     * @return   debug data
+     * @return   string debug data
      * @access   public
      */
     function &getDebug()
@@ -341,7 +345,7 @@ class nusoap_base
      * gets the current debug data for this instance as an XML comment
      * this may change the contents of the debug data
      *
-     * @return   debug data as an XML comment
+     * @return   string debug data as an XML comment
      * @access   public
      */
     function &getDebugAsXMLComment()
@@ -352,13 +356,15 @@ class nusoap_base
             $this->debug_str = str_replace('--', '- -', $this->debug_str);
         }
         $ret = "<!--\n" . $this->debug_str . "\n-->";
+
         return $ret;
     }
 
     /**
      * expands entities, e.g. changes '<' to '&lt;'.
      *
-     * @param    string $val The string in which to expand entities.
+     * @param string $val The string in which to expand entities.
+     *
      * @access    private
      */
     function expandEntities($val)
@@ -370,6 +376,7 @@ class nusoap_base
             $val = str_replace('<', '&lt;', $val);
             $val = str_replace('>', '&gt;', $val);
         }
+
         return $val;
     }
 
@@ -384,6 +391,7 @@ class nusoap_base
         if ($this->error_str != '') {
             return $this->error_str;
         }
+
         return false;
     }
 
@@ -401,7 +409,8 @@ class nusoap_base
     /**
      * detect if array is a simple array or a struct (associative array)
      *
-     * @param    mixed $val The PHP array
+     * @param mixed $val The PHP array
+     *
      * @return    string    (arraySimple|arrayStruct)
      * @access    private
      */
@@ -413,6 +422,7 @@ class nusoap_base
                 return 'arrayStruct';
             }
         }
+
         return 'arraySimple';
     }
 
@@ -420,14 +430,15 @@ class nusoap_base
      * serializes PHP values in accordance w/ section 5. Type information is
      * not serialized if $use == 'literal'.
      *
-     * @param    mixed $val The value to serialize
-     * @param    string $name The name (local part) of the XML element
-     * @param    string $type The XML schema type (local part) for the element
-     * @param    string $name_ns The namespace for the name of the XML element
-     * @param    string $type_ns The namespace for the type of the element
-     * @param    array $attributes The attributes to serialize as name=>value pairs
-     * @param    string $use The WSDL "use" (encoded|literal)
-     * @param    boolean $soapval Whether this is called from soapval.
+     * @param mixed   $val        The value to serialize
+     * @param string  $name       The name (local part) of the XML element
+     * @param string  $type       The XML schema type (local part) for the element
+     * @param string  $name_ns    The namespace for the name of the XML element
+     * @param string  $type_ns    The namespace for the type of the element
+     * @param array   $attributes The attributes to serialize as name=>value pairs
+     * @param string  $use        The WSDL "use" (encoded|literal)
+     * @param boolean $soapval    Whether this is called from soapval.
+     *
      * @return    string    The serialized element, possibly with child elements
      * @access    public
      */
@@ -443,6 +454,7 @@ class nusoap_base
             $this->appendDebug($val->getDebug());
             $val->clearDebug();
             $this->debug("serialize_val of soapval returning $xml");
+
             return $xml;
         }
         // force valid name if necessary
@@ -455,8 +467,8 @@ class nusoap_base
         $xmlns = '';
         if ($name_ns) {
             $prefix = 'nu' . rand(1000, 9999);
-            $name = $prefix . ':' . $name;
-            $xmlns .= " xmlns:$prefix=\"$name_ns\"";
+            $name   = $prefix . ':' . $name;
+            $xmlns  .= " xmlns:$prefix=\"$name_ns\"";
         }
         // if type is prefixed, create type prefix
         if ($type_ns != '' && $type_ns == $this->namespaces['xsd']) {
@@ -465,7 +477,7 @@ class nusoap_base
             $type_prefix = 'xsd';
         } elseif ($type_ns) {
             $type_prefix = 'ns' . rand(1000, 9999);
-            $xmlns .= " xmlns:$type_prefix=\"$type_ns\"";
+            $xmlns       .= " xmlns:$type_prefix=\"$type_ns\"";
         }
         // serialize attributes if present
         $atts = '';
@@ -481,6 +493,7 @@ class nusoap_base
                 // TODO: depends on minOccurs
                 $xml = "<$name$xmlns$atts/>";
                 $this->debug("serialize_val returning $xml");
+
                 return $xml;
             } else {
                 if (isset($type) && isset($type_prefix)) {
@@ -490,6 +503,7 @@ class nusoap_base
                 }
                 $xml = "<$name$xmlns$type_str$atts xsi:nil=\"true\"/>";
                 $this->debug("serialize_val returning $xml");
+
                 return $xml;
             }
         }
@@ -508,10 +522,12 @@ class nusoap_base
             if ($use == 'literal') {
                 $xml = "<$name$xmlns$atts>$val</$name>";
                 $this->debug("serialize_val returning $xml");
+
                 return $xml;
             } else {
                 $xml = "<$name$xmlns xsi:type=\"xsd:$type\"$atts>$val</$name>";
                 $this->debug("serialize_val returning $xml");
+
                 return $xml;
             }
         }
@@ -596,7 +612,7 @@ class nusoap_base
                         foreach ($val as $v) {
                             if (is_object($v) && get_class($v) == 'soapval') {
                                 $tt_ns = $v->type_ns;
-                                $tt = $v->type;
+                                $tt    = $v->type;
                             } elseif (is_array($v)) {
                                 $tt = $this->isArraySimpleOrStruct($v);
                             } else {
@@ -623,9 +639,9 @@ class nusoap_base
                             if ($tt_ns != '' && $tt_ns == $this->namespaces['xsd']) {
                                 $array_typename = 'xsd:' . $tt;
                             } elseif ($tt_ns) {
-                                $tt_prefix = 'ns' . rand(1000, 9999);
+                                $tt_prefix      = 'ns' . rand(1000, 9999);
                                 $array_typename = "$tt_prefix:$tt";
-                                $xmlns .= " xmlns:$tt_prefix=\"$tt_ns\"";
+                                $xmlns          .= " xmlns:$tt_prefix=\"$tt_ns\"";
                             } else {
                                 $array_typename = $tt;
                             }
@@ -683,18 +699,20 @@ class nusoap_base
                 break;
         }
         $this->debug("serialize_val returning $xml");
+
         return $xml;
     }
 
     /**
      * serializes a message
      *
-     * @param string $body the XML of the SOAP body
-     * @param mixed $headers optional string of XML with SOAP header content, or array of soapval objects for SOAP headers, or associative array
-     * @param array $namespaces optional the namespaces used in generating the body and headers
-     * @param string $style optional (rpc|document)
-     * @param string $use optional (encoded|literal)
+     * @param string $body          the XML of the SOAP body
+     * @param mixed  $headers       optional string of XML with SOAP header content, or array of soapval objects for SOAP headers, or associative array
+     * @param array  $namespaces    optional the namespaces used in generating the body and headers
+     * @param string $style         optional (rpc|document)
+     * @param string $use           optional (encoded|literal)
      * @param string $encodingStyle optional (usually 'http://schemas.xmlsoap.org/soap/encoding/' for encoded)
+     *
      * @return string the message
      * @access public
      */
@@ -735,6 +753,7 @@ class nusoap_base
             }
             $headers = "<SOAP-ENV:Header>" . $headers . "</SOAP-ENV:Header>";
         }
+
         // serialize envelope
         return
             '<?xml version="1.0" encoding="' . $this->soap_defencoding . '"?' . ">" .
@@ -750,6 +769,7 @@ class nusoap_base
      * formats a string to be inserted into an HTML stream
      *
      * @param string $str The string to format
+     *
      * @return string The formatted string
      * @access public
      * @deprecated
@@ -757,13 +777,15 @@ class nusoap_base
     function formatDump($str)
     {
         $str = htmlspecialchars($str);
+
         return nl2br($str);
     }
 
     /**
      * contracts (changes namespace to prefix) a qualified name
      *
-     * @param    string $qname qname
+     * @param string $qname qname
+     *
      * @return    string contracted qname
      * @access   private
      */
@@ -776,10 +798,11 @@ class nusoap_base
             $name = substr($qname, strrpos($qname, ':') + 1);
             // get ns
             $ns = substr($qname, 0, strrpos($qname, ':'));
-            $p = $this->getPrefixFromNamespace($ns);
+            $p  = $this->getPrefixFromNamespace($ns);
             if ($p) {
                 return $p . ':' . $name;
             }
+
             return $qname;
         } else {
             return $qname;
@@ -789,7 +812,8 @@ class nusoap_base
     /**
      * expands (changes prefix to namespace) a qualified name
      *
-     * @param    string $qname qname
+     * @param string $qname qname
+     *
      * @return    string expanded qname
      * @access   private
      */
@@ -816,6 +840,7 @@ class nusoap_base
      * returns the original string, if not prefixed
      *
      * @param string $str The prefixed string
+     *
      * @return string The local part
      * @access public
      */
@@ -834,6 +859,7 @@ class nusoap_base
      * returns false, if not prefixed
      *
      * @param string $str The prefixed string
+     *
      * @return mixed The prefix or false if there is no prefix
      * @access public
      */
@@ -843,6 +869,7 @@ class nusoap_base
             // get prefix
             return substr($str, 0, $pos);
         }
+
         return false;
     }
 
@@ -850,6 +877,7 @@ class nusoap_base
      * pass it a prefix, it returns a namespace
      *
      * @param string $prefix The prefix
+     *
      * @return mixed The namespace, false if no namespace has the specified prefix
      * @access public
      */
@@ -858,6 +886,7 @@ class nusoap_base
         if (isset($this->namespaces[$prefix])) {
             return $this->namespaces[$prefix];
         }
+
         //$this->setError("No namespace registered for prefix '$prefix'");
         return false;
     }
@@ -867,6 +896,7 @@ class nusoap_base
      * or false if no prefixes registered for the given namespace
      *
      * @param string $ns The namespace
+     *
      * @return mixed The prefix, false if the namespace has no prefixes
      * @access public
      */
@@ -875,9 +905,11 @@ class nusoap_base
         foreach ($this->namespaces as $p => $n) {
             if ($ns == $n || $ns == $p) {
                 $this->usedNamespaces[$p] = $n;
+
                 return $p;
             }
         }
+
         return false;
     }
 
@@ -890,13 +922,14 @@ class nusoap_base
     function getmicrotime()
     {
         if (function_exists('gettimeofday')) {
-            $tod = gettimeofday();
-            $sec = $tod['sec'];
+            $tod  = gettimeofday();
+            $sec  = $tod['sec'];
             $usec = $tod['usec'];
         } else {
-            $sec = time();
+            $sec  = time();
             $usec = 0;
         }
+
         return strftime('%Y-%m-%d %H:%M:%S', $sec) . '.' . sprintf('%06d', $usec);
     }
 
@@ -904,6 +937,7 @@ class nusoap_base
      * Returns a string with the output of var_dump
      *
      * @param mixed $data The variable to var_dump
+     *
      * @return string The output of var_dump
      * @access public
      */
@@ -913,6 +947,7 @@ class nusoap_base
         var_dump($data);
         $ret_val = ob_get_contents();
         ob_end_clean();
+
         return $ret_val;
     }
 
