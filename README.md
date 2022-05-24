@@ -16,12 +16,21 @@ Step 1: Install packages
 composer require nguyenanhung/nusoap
 ```
 
-Step 2: Init to Project
+Step 2.1: Init to Project if PHP <= 7.0
 
 ```php
 <?php 
 require '/your/to/path/vendor/autoload.php';
 use nguyenanhung\MyNuSOAP\nusoap_client;
+$client = new nusoap_client();
+```
+
+Step 2.2: Init to Project if PHP <= 8.1
+
+```php
+<?php 
+require '/your/to/path/vendor/autoload.php';
+use nguyenanhung\MyFixNuSOAP\nusoap_client;
 $client = new nusoap_client();
 ```
 
