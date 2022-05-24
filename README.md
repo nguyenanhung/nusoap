@@ -1,11 +1,12 @@
 [![Latest Stable Version](http://poser.pugx.org/nguyenanhung/nusoap/v)](https://packagist.org/packages/nguyenanhung/nusoap) [![Total Downloads](http://poser.pugx.org/nguyenanhung/nusoap/downloads)](https://packagist.org/packages/nguyenanhung/nusoap) [![Latest Unstable Version](http://poser.pugx.org/nguyenanhung/nusoap/v/unstable)](https://packagist.org/packages/nguyenanhung/nusoap) [![License](http://poser.pugx.org/nguyenanhung/nusoap/license)](https://packagist.org/packages/nguyenanhung/nusoap) [![PHP Version Require](http://poser.pugx.org/nguyenanhung/nusoap/require/php)](https://packagist.org/packages/nguyenanhung/nusoap) [![Monthly Downloads](http://poser.pugx.org/nguyenanhung/nusoap/d/monthly)](https://packagist.org/packages/nguyenanhung/nusoap) [![Daily Downloads](http://poser.pugx.org/nguyenanhung/nusoap/d/daily)](https://packagist.org/packages/nguyenanhung/nusoap)
-# NuSoap - Fix for Php >= 5.4 and <= 8.0
+
+# NuSoap - Fix for Php >= 5.4 and <= 8.1
 
 NuSphere's NuSOAP for Packagist/Composer
 
 Refactor by me, use namespace
 
-Fix NuSOAP for PHP `>=5.4` and  PHP `<=8.0`
+Fix NuSOAP for PHP `>=5.4` and PHP `<=8.1`
 
 ## Install
 

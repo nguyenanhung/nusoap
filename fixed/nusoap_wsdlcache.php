@@ -232,6 +232,7 @@ class nusoap_wsdlcache
     }
 }
 
+
 /**
  * For backward compatibility
  */
