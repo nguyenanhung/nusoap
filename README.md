@@ -8,6 +8,8 @@ Refactor by me, use namespace
 
 Fix NuSOAP for PHP `>=5.4` and PHP `<=8.1`
 
+Donate me with PayPal: [https://www.paypal.com/paypalme/nguyenanhung](https://www.paypal.com/paypalme/nguyenanhung)
+
 ## Install
 
 Step 1: Install packages
