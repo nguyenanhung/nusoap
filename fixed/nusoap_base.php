@@ -3,7 +3,7 @@
 namespace nguyenanhung\MyFixNuSOAP;
 
 /*
-$Id: class.nusoap_base.php,v 1.56 2010/04/26 20:15:08 snichol Exp $
+$Id: nusoap.php,v 1.124 2010/04/26 20:15:08 snichol Exp $
 
 NuSOAP - Web Services Toolkit for PHP
 
@@ -467,8 +467,8 @@ class nusoap_base
         $xmlns = '';
         if ($name_ns) {
             $prefix = 'nu' . rand(1000, 9999);
-            $name   = $prefix . ':' . $name;
-            $xmlns  .= " xmlns:$prefix=\"$name_ns\"";
+            $name = $prefix . ':' . $name;
+            $xmlns .= " xmlns:$prefix=\"$name_ns\"";
         }
         // if type is prefixed, create type prefix
         if ($type_ns != '' && $type_ns == $this->namespaces['xsd']) {
@@ -477,7 +477,7 @@ class nusoap_base
             $type_prefix = 'xsd';
         } elseif ($type_ns) {
             $type_prefix = 'ns' . rand(1000, 9999);
-            $xmlns       .= " xmlns:$type_prefix=\"$type_ns\"";
+            $xmlns .= " xmlns:$type_prefix=\"$type_ns\"";
         }
         // serialize attributes if present
         $atts = '';
@@ -612,7 +612,7 @@ class nusoap_base
                         foreach ($val as $v) {
                             if (is_object($v) && get_class($v) == 'soapval') {
                                 $tt_ns = $v->type_ns;
-                                $tt    = $v->type;
+                                $tt = $v->type;
                             } elseif (is_array($v)) {
                                 $tt = $this->isArraySimpleOrStruct($v);
                             } else {
@@ -639,9 +639,9 @@ class nusoap_base
                             if ($tt_ns != '' && $tt_ns == $this->namespaces['xsd']) {
                                 $array_typename = 'xsd:' . $tt;
                             } elseif ($tt_ns) {
-                                $tt_prefix      = 'ns' . rand(1000, 9999);
+                                $tt_prefix = 'ns' . rand(1000, 9999);
                                 $array_typename = "$tt_prefix:$tt";
-                                $xmlns          .= " xmlns:$tt_prefix=\"$tt_ns\"";
+                                $xmlns .= " xmlns:$tt_prefix=\"$tt_ns\"";
                             } else {
                                 $array_typename = $tt;
                             }
@@ -798,7 +798,7 @@ class nusoap_base
             $name = substr($qname, strrpos($qname, ':') + 1);
             // get ns
             $ns = substr($qname, 0, strrpos($qname, ':'));
-            $p  = $this->getPrefixFromNamespace($ns);
+            $p = $this->getPrefixFromNamespace($ns);
             if ($p) {
                 return $p . ':' . $name;
             }
@@ -922,11 +922,11 @@ class nusoap_base
     function getmicrotime()
     {
         if (function_exists('gettimeofday')) {
-            $tod  = gettimeofday();
-            $sec  = $tod['sec'];
+            $tod = gettimeofday();
+            $sec = $tod['sec'];
             $usec = $tod['usec'];
         } else {
-            $sec  = time();
+            $sec = time();
             $usec = 0;
         }
         $dtx = new DateTime("@$sec");

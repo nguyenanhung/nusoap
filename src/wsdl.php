@@ -107,13 +107,12 @@ class wsdl extends nusoap_base
             $imported = 0;
             // Schema imports
             foreach ($this->schemas as $ns => $list) {
-                foreach ($list as $xs) {
+                foreach ($list as $xsKey => $xs) {
                     $wsdlparts = parse_url($this->wsdl);    // this is bogusly simple!
                     foreach ($xs->imports as $ns2 => $list2) {
-                        $list2Count = count($list2);
-                        for ($ii = 0; $ii < $list2Count; $ii++) {
+                        for ($ii = 0; $ii < count($list2); $ii++) {
                             if (array_key_exists($ii, $list2) && (!isset($list2[$ii]['loaded']) || !$list2[$ii]['loaded'])) {
-                                $this->schemas[$ns][$ns2]->imports[$ns2][$ii]['loaded'] = true;
+                                @$this->schemas[$ns][$xsKey]->imports[$ns2][$ii]['loaded'] = true;
                                 $url = $list2[$ii]['location'];
                                 if ($url != '') {
                                     $urlparts = parse_url($url);
@@ -137,8 +136,7 @@ class wsdl extends nusoap_base
             // WSDL imports
             $wsdlparts = parse_url($this->wsdl);    // this is bogusly simple!
             foreach ($this->import as $ns => $list) {
-                $listCount = count($list);
-                for ($ii = 0; $ii < $listCount; $ii++) {
+                for ($ii = 0; $ii < count($list); $ii++) {
                     if (!$list[$ii]['loaded']) {
                         $this->import[$ns][$ii]['loaded'] = true;
                         $url = $list[$ii]['location'];
@@ -730,8 +728,7 @@ class wsdl extends nusoap_base
         }
         if (isset($this->schemas[$ns])) {
             $this->debug("in getTypeDef: have schema for namespace $ns");
-            $schemaNsCount = count($this->schemas[$ns]);
-            for ($i = 0; $i < $schemaNsCount; $i++) {
+            for ($i = 0; $i < count($this->schemas[$ns]); $i++) {
                 $xs = &$this->schemas[$ns][$i];
                 $t = $xs->getTypeDef($type);
                 $this->appendDebug($xs->getDebug());
@@ -1888,9 +1885,10 @@ class wsdl extends nusoap_base
      * @param string $use (encoded|literal) optional The use for the parameters (cannot mix right now)
      * @param string $documentation optional The description to include in the WSDL
      * @param string $encodingStyle optional (usually 'http://schemas.xmlsoap.org/soap/encoding/' for encoded)
+     * @param string $customResponseTagName optional Name of the outgoing response
      * @access public
      */
-    function addOperation($name, $in = false, $out = false, $namespace = false, $soapaction = false, $style = 'rpc', $use = 'encoded', $documentation = '', $encodingStyle = '')
+    function addOperation($name, $in = false, $out = false, $namespace = false, $soapaction = false, $style = 'rpc', $use = 'encoded', $documentation = '', $encodingStyle = '', $customResponseTagName = '')
     {
         if ($use == 'encoded' && $encodingStyle == '') {
             $encodingStyle = 'http://schemas.xmlsoap.org/soap/encoding/';
@@ -1910,8 +1908,8 @@ class wsdl extends nusoap_base
                 $elements[$n] = array('name' => $n, 'type' => $t, 'form' => 'unqualified');
             }
             $this->addComplexType($name . 'ResponseType', 'complexType', 'struct', 'all', '', $elements);
-            $this->addElement(array('name' => $name . 'Response', 'type' => $name . 'ResponseType', 'form' => 'qualified'));
-            $out = array('parameters' => 'tns:' . $name . 'Response' . '^');
+            $this->addElement(array('name' => $customResponseTagName, 'type' => $name . 'ResponseType', 'form' => 'qualified'));
+            $out = array('parameters' => 'tns:' . $customResponseTagName . '^');
         }
 
         // get binding
@@ -1926,13 +1924,13 @@ class wsdl extends nusoap_base
                     'use' => $use,
                     'namespace' => $namespace,
                     'encodingStyle' => $encodingStyle,
-                    'message' => $name . 'Request',
+                    'message' => $name,
                     'parts' => $in),
                 'output' => array(
                     'use' => $use,
                     'namespace' => $namespace,
                     'encodingStyle' => $encodingStyle,
-                    'message' => $name . 'Response',
+                    'message' => $customResponseTagName,
                     'parts' => $out),
                 'namespace' => $namespace,
                 'transport' => 'http://schemas.xmlsoap.org/soap/http',
@@ -1944,20 +1942,20 @@ class wsdl extends nusoap_base
                 if (strpos($pType, ':')) {
                     $pType = $this->getNamespaceFromPrefix($this->getPrefix($pType)) . ":" . $this->getLocalPart($pType);
                 }
-                $this->messages[$name . 'Request'][$pName] = $pType;
+                $this->messages[$name][$pName] = $pType;
             }
         } else {
-            $this->messages[$name . 'Request'] = '0';
+            $this->messages[$name] = '0';
         }
         if ($out) {
             foreach ($out as $pName => $pType) {
                 if (strpos($pType, ':')) {
                     $pType = $this->getNamespaceFromPrefix($this->getPrefix($pType)) . ":" . $this->getLocalPart($pType);
                 }
-                $this->messages[$name . 'Response'][$pName] = $pType;
+                $this->messages[$customResponseTagName][$pName] = $pType;
             }
         } else {
-            $this->messages[$name . 'Response'] = '0';
+            $this->messages[$customResponseTagName] = '0';
         }
         return true;
     }

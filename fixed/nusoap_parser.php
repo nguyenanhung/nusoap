@@ -15,32 +15,34 @@ namespace nguyenanhung\MyFixNuSOAP;
 class nusoap_parser extends nusoap_base
 {
 
-    var $xml                   = '';
-    var $xml_encoding          = '';
-    var $method                = '';
-    var $root_struct           = '';
-    var $root_struct_name      = '';
+    var $parser = null;
+    var $methodNamespace = '';
+    var $xml = '';
+    var $xml_encoding = '';
+    var $method = '';
+    var $root_struct = '';
+    var $root_struct_name = '';
     var $root_struct_namespace = '';
-    var $root_header           = '';
-    var $document              = '';            // incoming SOAP body (text)
+    var $root_header = '';
+    var $document = '';            // incoming SOAP body (text)
     // determines where in the message we are (envelope,header,body,method)
-    var $status            = '';
-    var $position          = 0;
-    var $depth             = 0;
+    var $status = '';
+    var $position = 0;
+    var $depth = 0;
     var $default_namespace = '';
-    var $namespaces        = array();
-    var $message           = array();
-    var $parent            = '';
-    var $fault             = false;
-    var $fault_code        = '';
-    var $fault_str         = '';
-    var $fault_detail      = '';
-    var $depth_array       = array();
-    var $debug_flag        = true;
-    var $soapresponse      = null;    // parsed SOAP Body
-    var $soapheader        = null;        // parsed SOAP Header
-    var $responseHeaders   = '';    // incoming SOAP headers (text)
-    var $body_position     = 0;
+    var $namespaces = array();
+    var $message = array();
+    var $parent = '';
+    var $fault = false;
+    var $fault_code = '';
+    var $fault_str = '';
+    var $fault_detail = '';
+    var $depth_array = array();
+    var $debug_flag = true;
+    var $soapresponse = null;    // parsed SOAP Body
+    var $soapheader = null;        // parsed SOAP Header
+    var $responseHeaders = '';    // incoming SOAP headers (text)
+    var $body_position = 0;
     // for multiref parsing:
     // array of id => pos
     var $ids = array();
@@ -49,23 +51,25 @@ class nusoap_parser extends nusoap_base
     // toggle for auto-decoding element content
     var $decode_utf8 = true;
 
+    var $attachments = array();
+
     /**
      * constructor that actually does the parsing
      *
-     * @param string $xml         SOAP message
-     * @param string $encoding    character encoding scheme of message
-     * @param string $method      method for which XML is parsed (unused?)
-     * @param string $decode_utf8 whether to decode UTF-8 to ISO-8859-1
-     *
+     * @param    string $xml SOAP message
+     * @param    string $encoding character encoding scheme of message
+     * @param    string $method method for which XML is parsed (unused?)
+     * @param    string $decode_utf8 whether to decode UTF-8 to ISO-8859-1
      * @access   public
      */
     function __construct($xml, $encoding = 'UTF-8', $method = '', $decode_utf8 = true)
     {
         parent::__construct();
-        $this->xml          = $xml;
+        $this->xml = $xml;
         $this->xml_encoding = $encoding;
-        $this->method       = $method;
-        $this->decode_utf8  = $decode_utf8;
+        $this->method = $method;
+        $this->decode_utf8 = $decode_utf8;
+        $this->attachments = array();
 
         // Check whether content has been read.
         if (!empty($xml)) {
@@ -80,7 +84,6 @@ class nusoap_parser extends nusoap_base
                         $this->debug($err);
                         if ($encoding != 'ISO-8859-1' || strtoupper($xml_encoding) != 'UTF-8') {
                             $this->setError($err);
-
                             return;
                         }
                         // when HTTP says ISO-8859-1 (the default) and XML says UTF-8 (the typical), assume the other endpoint is just sloppy and proceed
@@ -106,18 +109,87 @@ class nusoap_parser extends nusoap_base
             xml_set_element_handler($this->parser, 'start_element', 'end_element');
             xml_set_character_data_handler($this->parser, 'character_data');
             $parseErrors = array();
-            $chunkSize   = 4096;
-            for ($pointer = 0; $pointer < strlen($xml) && empty($parseErrors); $pointer += $chunkSize) {
+            $chunkSize = 4096;
+            for($pointer = 0; $pointer < strlen($xml) && empty($parseErrors); $pointer += $chunkSize) {
                 $xmlString = substr($xml, $pointer, $chunkSize);
-                if (!xml_parse($this->parser, $xmlString, false)) {
-                    $parseErrors['lineNumber']  = xml_get_current_line_number($this->parser);
+                if(!xml_parse($this->parser, $xmlString, false)) {
+                    $parseErrors['lineNumber'] = xml_get_current_line_number($this->parser);
                     $parseErrors['errorString'] = xml_error_string(xml_get_error_code($this->parser));
                 };
             }
             //Tell the script that is the end of the parsing (by setting is_final to TRUE)
             xml_parse($this->parser, '', true);
 
-            if (!empty($parseErrors)) {
+            // Check if there is any attachment
+            $this->attachments = array();
+            foreach(preg_split("/((\r?\n)|(\r\n?))/", $xml) as $line){
+                if(preg_match(("/^--(.*)/"), $line, $matches)) {
+                    array_push($this->attachments, array());
+                    $this->attachments[count($this->attachments)-1]['boundaryStr'] = $matches[1];
+                } elseif(preg_match(("/Content-Type:(.*)/"), $line, $matches)) {
+                    $this->attachments[count($this->attachments)-1]['Content-Type'] = $matches[1];
+                } elseif(preg_match(("/Content-Id:(.*)/"), $line, $matches)) {
+                    $this->attachments[count($this->attachments)-1]['Content-Id'] = $matches[1];
+                } elseif(preg_match(("/Content-Transfer-Encoding:(.*)/"), $line, $matches)) {
+                    $this->attachments[count($this->attachments)-1]['Content-Transfer-Encoding'] = $matches[1];
+                }
+            }
+
+            if(!empty($this->attachments)) {
+                // Extract the content of each attachments
+                $substrXml = $xml;
+                foreach($this->attachments as $key => $attachment) {
+                    $startPos = max(
+                        stripos($substrXml, $attachment['boundaryStr']),
+                        (array_key_exists('Content-Type', $attachment) ? stripos($substrXml, $attachment['Content-Type']) : 0),
+                        (array_key_exists('Content-Id', $attachment) ? stripos($substrXml, $attachment['Content-Id']) : 0),
+                        (array_key_exists('Content-Transfer-Encoding', $attachment) ? stripos($substrXml, $attachment['Content-Transfer-Encoding']) : 0)
+                    );
+                    $substrXml = substr($substrXml, $startPos);
+                    $startPos = stripos($substrXml, PHP_EOL);
+                    $substrXml = substr($substrXml, $startPos);
+                    $substrXml = trim($substrXml);
+                    $length = null;
+                    if(array_key_exists($key+1, $this->attachments) && $this->attachments[$key+1] && !empty($this->attachments[$key+1]['boundaryStr'])) {
+                        $length = stripos($substrXml, ('--' . $this->attachments[$key+1]['boundaryStr']))-1;
+                    }
+                    $content = substr($substrXml, 0, $length);
+                    $this->attachments[$key]['content'] = $content;
+
+                    $substrXml = substr($substrXml, $length);
+                }
+            }
+
+            if(!empty($parseErrors) && !empty($this->attachments)){
+                // Search the SOAP response message
+                foreach($this->attachments as $key => $attachment) {
+                    // Settings for xml_parse
+                    $this->parser = xml_parser_create($this->xml_encoding);
+                    xml_parser_set_option($this->parser, XML_OPTION_CASE_FOLDING, 0);
+                    xml_parser_set_option($this->parser, XML_OPTION_TARGET_ENCODING, $this->xml_encoding);
+                    xml_set_object($this->parser, $this);
+                    xml_set_element_handler($this->parser, 'start_element', 'end_element');
+                    xml_set_character_data_handler($this->parser, 'character_data');
+
+                    if(!empty($attachment['content'])) {
+                        $content = $attachment['content'];
+                        foreach(preg_split("/((\r?\n)|(\r\n?))/", $content) as $line){
+                            if(preg_match(("/:Envelope/"), $line, $matches)) {
+                                if(!xml_parse($this->parser, $content, true)) {
+                                    $parseErrors['lineNumber'] = xml_get_current_line_number($this->parser);
+                                    $parseErrors['errorString'] = xml_error_string(xml_get_error_code($this->parser));
+                                } else {
+                                    $parseErrors = array();
+                                    unset($this->attachments[$key]);
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(!empty($parseErrors)){
                 // Display an error message.
                 $err = sprintf('XML error parsing SOAP payload on line %d: %s',
                                $parseErrors['lineNumber'],
@@ -160,10 +232,9 @@ class nusoap_parser extends nusoap_base
     /**
      * start-element handler
      *
-     * @param resource $parser XML parser object
-     * @param string   $name   element name
-     * @param array    $attrs  associative array of attributes
-     *
+     * @param    resource $parser XML parser object
+     * @param    string $name element name
+     * @param    array $attrs associative array of attributes
      * @access   private
      */
     function start_element($parser, $name, $attrs)
@@ -199,15 +270,15 @@ class nusoap_parser extends nusoap_base
             $this->status = 'envelope';
         } elseif ($name == 'Header' && $this->status == 'envelope') {
             $this->root_header = $pos;
-            $this->status      = 'header';
+            $this->status = 'header';
         } elseif ($name == 'Body' && $this->status == 'envelope') {
-            $this->status        = 'body';
+            $this->status = 'body';
             $this->body_position = $pos;
             // set method
         } elseif ($this->status == 'body' && $pos == ($this->body_position + 1)) {
-            $this->status                = 'method';
-            $this->root_struct_name      = $name;
-            $this->root_struct           = $pos;
+            $this->status = 'method';
+            $this->root_struct_name = $name;
+            $this->root_struct = $pos;
             $this->message[$pos]['type'] = 'struct';
             $this->debug("found root struct $this->root_struct_name, pos $this->root_struct");
         }
@@ -221,12 +292,12 @@ class nusoap_parser extends nusoap_base
         // loop through atts, logging ns and type declarations
         $attstr = '';
         foreach ($attrs as $key => $value) {
-            $key_prefix    = $this->getPrefix($key);
+            $key_prefix = $this->getPrefix($key);
             $key_localpart = $this->getLocalPart($key);
             // if ns declarations, add to class level array of valid namespaces
             if ($key_prefix == 'xmlns') {
                 if (preg_match('/^http:\/\/www.w3.org\/[0-9]{4}\/XMLSchema$/', $value)) {
-                    $this->XMLSchemaVersion  = $value;
+                    $this->XMLSchemaVersion = $value;
                     $this->namespaces['xsd'] = $this->XMLSchemaVersion;
                     $this->namespaces['xsi'] = $this->XMLSchemaVersion . '-instance';
                 }
@@ -240,9 +311,9 @@ class nusoap_parser extends nusoap_base
                 if (isset($this->message[$pos]['type']) && $this->message[$pos]['type'] == 'array') {
                     // do nothing: already processed arrayType
                 } else {
-                    $value_prefix                      = $this->getPrefix($value);
-                    $value_localpart                   = $this->getLocalPart($value);
-                    $this->message[$pos]['type']       = $value_localpart;
+                    $value_prefix = $this->getPrefix($value);
+                    $value_localpart = $this->getLocalPart($value);
+                    $this->message[$pos]['type'] = $value_localpart;
                     $this->message[$pos]['typePrefix'] = $value_prefix;
                     if (isset($this->namespaces[$value_prefix])) {
                         $this->message[$pos]['type_namespace'] = $this->namespaces[$value_prefix];
@@ -263,7 +334,7 @@ class nusoap_parser extends nusoap_base
 				*/
                 $expr = '/([A-Za-z0-9_]+):([A-Za-z]+[A-Za-z0-9_]+)\[([0-9]+),?([0-9]*)\]/';
                 if (preg_match($expr, $value, $regs)) {
-                    $this->message[$pos]['typePrefix']      = $regs[1];
+                    $this->message[$pos]['typePrefix'] = $regs[1];
                     $this->message[$pos]['arrayTypePrefix'] = $regs[1];
                     if (isset($this->namespaces[$regs[1]])) {
                         $this->message[$pos]['arrayTypeNamespace'] = $this->namespaces[$regs[1]];
@@ -291,9 +362,9 @@ class nusoap_parser extends nusoap_base
             }
             // root
             if ($key_localpart == 'root' && $value == 1) {
-                $this->status           = 'method';
+                $this->status = 'method';
                 $this->root_struct_name = $name;
-                $this->root_struct      = $pos;
+                $this->root_struct = $pos;
                 $this->debug("found root struct $this->root_struct_name, pos $pos");
             }
             // for doclit
@@ -302,7 +373,7 @@ class nusoap_parser extends nusoap_base
         // get namespace - must be done after namespace atts are processed
         if (isset($prefix)) {
             $this->message[$pos]['namespace'] = $this->namespaces[$prefix];
-            $this->default_namespace          = $this->namespaces[$prefix];
+            $this->default_namespace = $this->namespaces[$prefix];
         } else {
             $this->message[$pos]['namespace'] = $this->default_namespace;
         }
@@ -318,9 +389,8 @@ class nusoap_parser extends nusoap_base
     /**
      * end-element handler
      *
-     * @param resource $parser XML parser object
-     * @param string   $name   element name
-     *
+     * @param    resource $parser XML parser object
+     * @param    string $name element name
      * @access   private
      */
     function end_element($parser, $name)
@@ -408,7 +478,7 @@ class nusoap_parser extends nusoap_base
         }
         // switch status
         if ($pos == $this->root_struct) {
-            $this->status                = 'body';
+            $this->status = 'body';
             $this->root_struct_namespace = $this->message[$pos]['namespace'];
         } elseif ($pos == $this->root_header) {
             $this->status = 'envelope';
@@ -426,9 +496,8 @@ class nusoap_parser extends nusoap_base
     /**
      * element content handler
      *
-     * @param resource $parser XML parser object
-     * @param string   $data   element content
-     *
+     * @param    resource $parser XML parser object
+     * @param    string $data element content
      * @access   private
      */
     function character_data($parser, $data)
@@ -439,7 +508,7 @@ class nusoap_parser extends nusoap_base
             // raw UTF-8 that, e.g., might not map to iso-8859-1
             // TODO: this can also be handled with xml_parser_set_option($this->parser, XML_OPTION_TARGET_ENCODING, "ISO-8859-1");
             if ($this->decode_utf8) {
-                $data = utf8_decode($data);
+                $data = function_exists('mb_convert_encoding') ? mb_convert_encoding($data, 'ISO-8859-1', 'UTF-8') : utf8_decode($data);
             }
         }
         $this->message[$pos]['cdata'] .= $data;
@@ -455,7 +524,7 @@ class nusoap_parser extends nusoap_base
      * get the parsed message (SOAP Body)
      *
      * @return    mixed
-     * @access        public
+     * @access   public
      * @deprecated    use get_soapbody instead
      */
     function get_response()
@@ -499,10 +568,9 @@ class nusoap_parser extends nusoap_base
     /**
      * decodes simple types into PHP variables
      *
-     * @param string $value  value to decode
-     * @param string $type   XML type to decode
-     * @param string $typens XML type namespace to decode
-     *
+     * @param    string $value value to decode
+     * @param    string $type XML type to decode
+     * @param    string $typens XML type namespace to decode
      * @return    mixed PHP value
      * @access   private
      */
@@ -522,12 +590,10 @@ class nusoap_parser extends nusoap_base
             if (strtolower($value) == 'false' || strtolower($value) == 'f') {
                 return false;
             }
-
             return (boolean) $value;
         }
         if ($type == 'base64' || $type == 'base64Binary') {
             $this->debug('Decode base64 value');
-
             return base64_decode($value);
         }
         // obscure numeric types
@@ -542,7 +608,6 @@ class nusoap_parser extends nusoap_base
         if ($type == 'array') {
             return array();
         }
-
         // everything else
         return (string) $value;
     }
@@ -551,8 +616,7 @@ class nusoap_parser extends nusoap_base
      * builds response structures for compound values (arrays/structs)
      * and scalars
      *
-     * @param integer $pos position in node tree
-     *
+     * @param    integer $pos position in node tree
      * @return    mixed    PHP value
      * @access   private
      */
@@ -591,7 +655,7 @@ class nusoap_parser extends nusoap_base
             } elseif ($this->message[$pos]['type'] == 'Map' && $this->message[$pos]['type_namespace'] == 'http://xml.apache.org/xml-soap') {
                 $this->debug('in buildVal, Java Map ' . $this->message[$pos]['name']);
                 foreach ($children as $child_pos) {
-                    $kv                                       = explode("|", $this->message[$child_pos]['children']);
+                    $kv = explode("|", $this->message[$child_pos]['children']);
                     $params[$this->message[$kv[1]]['result']] = &$this->message[$kv[2]]['result'];
                 }
                 // generic compound type
@@ -644,7 +708,6 @@ class nusoap_parser extends nusoap_base
             $ret = is_array($params) ? $params : array();
             $this->debug('in buildVal, return:');
             $this->appendDebug($this->varDump($ret));
-
             return $ret;
         } else {
             $this->debug('in buildVal, no children, building scalar');
@@ -652,19 +715,16 @@ class nusoap_parser extends nusoap_base
             if (isset($this->message[$pos]['type'])) {
                 $ret = $this->decodeSimple($cdata, $this->message[$pos]['type'], isset($this->message[$pos]['type_namespace']) ? $this->message[$pos]['type_namespace'] : '');
                 $this->debug("in buildVal, return: $ret");
-
                 return $ret;
             }
             $parent = $this->message[$pos]['parent'];
             if (isset($this->message[$parent]['type']) && ($this->message[$parent]['type'] == 'array') && isset($this->message[$parent]['arrayType'])) {
                 $ret = $this->decodeSimple($cdata, $this->message[$parent]['arrayType'], isset($this->message[$parent]['arrayTypeNamespace']) ? $this->message[$parent]['arrayTypeNamespace'] : '');
                 $this->debug("in buildVal, return: $ret");
-
                 return $ret;
             }
             $ret = $this->message[$pos]['cdata'];
             $this->debug("in buildVal, return: $ret");
-
             return $ret;
         }
     }

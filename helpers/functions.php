@@ -23,7 +23,7 @@ if (!function_exists('timestamp_to_iso8601')) {
     function timestamp_to_iso8601($timestamp, $utc = true)
     {
         $datestr = date('Y-m-d\TH:i:sO', $timestamp);
-        $pos     = strrpos($datestr, "+");
+        $pos = strrpos($datestr, "+");
         if ($pos === false) {
             $pos = strrpos($datestr, "-");
         }
@@ -80,8 +80,8 @@ if (!function_exists('iso8601_to_timestamp')) {
             // not utc
             if ($regs[8] != 'Z') {
                 $op = substr($regs[8], 0, 1);
-                $h  = substr($regs[8], 1, 2);
-                $m  = substr($regs[8], strlen($regs[8]) - 2, 2);
+                $h = substr($regs[8], 1, 2);
+                $m = substr($regs[8], strlen($regs[8]) - 2, 2);
                 if ($op == '-') {
                     $regs[4] = $regs[4] + $h;
                     $regs[5] = $regs[5] + $m;
@@ -113,7 +113,7 @@ if (!function_exists('usleepWindows')) {
         $start = gettimeofday();
 
         do {
-            $stop       = gettimeofday();
+            $stop = gettimeofday();
             $timePassed = 1000000 * ($stop['sec'] - $start['sec'])
                           + $stop['usec'] - $start['usec'];
         }

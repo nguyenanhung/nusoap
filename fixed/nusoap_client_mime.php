@@ -42,8 +42,8 @@ http://www.nusphere.com
 
 /*require_once('nusoap.php');*/
 /* PEAR Mail_MIME library */
-// require_once('Mail/mimeDecode.php');
-// require_once('Mail/mimePart.php');
+require_once('Mail/mimeDecode.php');
+require_once('Mail/mimePart.php');
 
 /**
  * nusoap_client_mime client supporting MIME attachments defined at
@@ -534,4 +534,3 @@ class nusoap_server_mime extends nusoap_server
 class nusoapservermime extends nusoap_server_mime
 {
 }
-

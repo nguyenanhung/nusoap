@@ -15,6 +15,8 @@ namespace nguyenanhung\MyNuSOAP;
 class nusoap_parser extends nusoap_base
 {
 
+    var $parser = null;
+    var $methodNamespace = '';
     var $xml = '';
     var $xml_encoding = '';
     var $method = '';
@@ -49,6 +51,8 @@ class nusoap_parser extends nusoap_base
     // toggle for auto-decoding element content
     var $decode_utf8 = true;
 
+    var $attachments = array();
+
     /**
      * constructor that actually does the parsing
      *
@@ -65,6 +69,7 @@ class nusoap_parser extends nusoap_base
         $this->xml_encoding = $encoding;
         $this->method = $method;
         $this->decode_utf8 = $decode_utf8;
+        $this->attachments = array();
 
         // Check whether content has been read.
         if (!empty($xml)) {
@@ -114,6 +119,75 @@ class nusoap_parser extends nusoap_base
             }
             //Tell the script that is the end of the parsing (by setting is_final to TRUE)
             xml_parse($this->parser, '', true);
+
+            // Check if there is any attachment
+            $this->attachments = array();
+            foreach(preg_split("/((\r?\n)|(\r\n?))/", $xml) as $line){
+                if(preg_match(("/^--(.*)/"), $line, $matches)) {
+                    array_push($this->attachments, array());
+                    $this->attachments[count($this->attachments)-1]['boundaryStr'] = $matches[1];
+                } elseif(preg_match(("/Content-Type:(.*)/"), $line, $matches)) {
+                    $this->attachments[count($this->attachments)-1]['Content-Type'] = $matches[1];
+                } elseif(preg_match(("/Content-Id:(.*)/"), $line, $matches)) {
+                    $this->attachments[count($this->attachments)-1]['Content-Id'] = $matches[1];
+                } elseif(preg_match(("/Content-Transfer-Encoding:(.*)/"), $line, $matches)) {
+                    $this->attachments[count($this->attachments)-1]['Content-Transfer-Encoding'] = $matches[1];
+                }
+            }
+
+            if(!empty($this->attachments)) {
+                // Extract the content of each attachments
+                $substrXml = $xml;
+                foreach($this->attachments as $key => $attachment) {
+                    $startPos = max(
+                        stripos($substrXml, $attachment['boundaryStr']),
+                        (array_key_exists('Content-Type', $attachment) ? stripos($substrXml, $attachment['Content-Type']) : 0),
+                        (array_key_exists('Content-Id', $attachment) ? stripos($substrXml, $attachment['Content-Id']) : 0),
+                        (array_key_exists('Content-Transfer-Encoding', $attachment) ? stripos($substrXml, $attachment['Content-Transfer-Encoding']) : 0)
+                    );
+                    $substrXml = substr($substrXml, $startPos);
+                    $startPos = stripos($substrXml, PHP_EOL);
+                    $substrXml = substr($substrXml, $startPos);
+                    $substrXml = trim($substrXml);
+                    $length = null;
+                    if(array_key_exists($key+1, $this->attachments) && $this->attachments[$key+1] && !empty($this->attachments[$key+1]['boundaryStr'])) {
+                        $length = stripos($substrXml, ('--' . $this->attachments[$key+1]['boundaryStr']))-1;
+                    }
+                    $content = substr($substrXml, 0, $length);
+                    $this->attachments[$key]['content'] = $content;
+
+                    $substrXml = substr($substrXml, $length);
+                }
+            }
+
+            if(!empty($parseErrors) && !empty($this->attachments)){
+                // Search the SOAP response message
+                foreach($this->attachments as $key => $attachment) {
+                    // Settings for xml_parse
+                    $this->parser = xml_parser_create($this->xml_encoding);
+                    xml_parser_set_option($this->parser, XML_OPTION_CASE_FOLDING, 0);
+                    xml_parser_set_option($this->parser, XML_OPTION_TARGET_ENCODING, $this->xml_encoding);
+                    xml_set_object($this->parser, $this);
+                    xml_set_element_handler($this->parser, 'start_element', 'end_element');
+                    xml_set_character_data_handler($this->parser, 'character_data');
+
+                    if(!empty($attachment['content'])) {
+                        $content = $attachment['content'];
+                        foreach(preg_split("/((\r?\n)|(\r\n?))/", $content) as $line){
+                            if(preg_match(("/:Envelope/"), $line, $matches)) {
+                                if(!xml_parse($this->parser, $content, true)) {
+                                    $parseErrors['lineNumber'] = xml_get_current_line_number($this->parser);
+                                    $parseErrors['errorString'] = xml_error_string(xml_get_error_code($this->parser));
+                                } else {
+                                    $parseErrors = array();
+                                    unset($this->attachments[$key]);
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             if(!empty($parseErrors)){
                 // Display an error message.
@@ -434,7 +508,7 @@ class nusoap_parser extends nusoap_base
             // raw UTF-8 that, e.g., might not map to iso-8859-1
             // TODO: this can also be handled with xml_parser_set_option($this->parser, XML_OPTION_TARGET_ENCODING, "ISO-8859-1");
             if ($this->decode_utf8) {
-                $data = utf8_decode($data);
+                $data = function_exists('mb_convert_encoding') ? mb_convert_encoding($data, 'ISO-8859-1', 'UTF-8') : utf8_decode($data);
             }
         }
         $this->message[$pos]['cdata'] .= $data;

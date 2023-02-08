@@ -16,69 +16,68 @@ class wsdl extends nusoap_base
     // URL or filename of the root of this WSDL
     var $wsdl;
     // define internal arrays of bindings, ports, operations, messages, etc.
-    var $schemas       = array();
+    var $schemas = array();
     var $currentSchema;
-    var $message       = array();
-    var $complexTypes  = array();
-    var $messages      = array();
+    var $message = array();
+    var $complexTypes = array();
+    var $messages = array();
     var $currentMessage;
     var $currentOperation;
-    var $portTypes     = array();
+    var $portTypes = array();
     var $currentPortType;
-    var $bindings      = array();
+    var $bindings = array();
     var $currentBinding;
-    var $ports         = array();
+    var $ports = array();
     var $currentPort;
-    var $opData        = array();
-    var $status        = '';
+    var $opData = array();
+    var $status = '';
     var $documentation = false;
-    var $endpoint      = '';
+    var $endpoint = '';
     // array of wsdl docs to import
     var $import = array();
     // parser vars
     var $parser;
-    var $position    = 0;
-    var $depth       = 0;
+    var $position = 0;
+    var $depth = 0;
     var $depth_array = array();
     // for getting wsdl
-    var $proxyhost        = '';
-    var $proxyport        = '';
-    var $proxyusername    = '';
-    var $proxypassword    = '';
-    var $timeout          = 0;
+    var $proxyhost = '';
+    var $proxyport = '';
+    var $proxyusername = '';
+    var $proxypassword = '';
+    var $timeout = 0;
     var $response_timeout = 30;
-    var $curl_options     = array();    // User-specified cURL options
-    var $use_curl         = false;            // whether to always try to use cURL
+    var $curl_options = array();    // User-specified cURL options
+    var $use_curl = false;            // whether to always try to use cURL
     // for HTTP authentication
-    var $username    = '';                // Username for HTTP authentication
-    var $password    = '';                // Password for HTTP authentication
-    var $authtype    = '';                // Type of HTTP authentication
+    var $username = '';                // Username for HTTP authentication
+    var $password = '';                // Password for HTTP authentication
+    var $authtype = '';                // Type of HTTP authentication
     var $certRequest = array();        // Certificate for HTTP SSL authentication
 
     /**
      * constructor
      *
-     * @param string  $wsdl             WSDL document URL
-     * @param string  $proxyhost
-     * @param string  $proxyport
-     * @param string  $proxyusername
-     * @param string  $proxypassword
-     * @param integer $timeout          set the connection timeout
+     * @param string $wsdl WSDL document URL
+     * @param string $proxyhost
+     * @param string $proxyport
+     * @param string $proxyusername
+     * @param string $proxypassword
+     * @param integer $timeout set the connection timeout
      * @param integer $response_timeout set the response timeout
-     * @param array   $curl_options     user-specified cURL options
-     * @param boolean $use_curl         try to use cURL
-     *
+     * @param array $curl_options user-specified cURL options
+     * @param boolean $use_curl try to use cURL
      * @access public
      */
     function __construct($wsdl = '', $proxyhost = false, $proxyport = false, $proxyusername = false, $proxypassword = false, $timeout = 0, $response_timeout = 30, $curl_options = null, $use_curl = false)
     {
         parent::__construct();
         $this->debug("ctor wsdl=$wsdl timeout=$timeout response_timeout=$response_timeout");
-        $this->proxyhost        = $proxyhost;
-        $this->proxyport        = $proxyport;
-        $this->proxyusername    = $proxyusername;
-        $this->proxypassword    = $proxypassword;
-        $this->timeout          = $timeout;
+        $this->proxyhost = $proxyhost;
+        $this->proxyport = $proxyport;
+        $this->proxyusername = $proxyusername;
+        $this->proxypassword = $proxypassword;
+        $this->timeout = $timeout;
         $this->response_timeout = $response_timeout;
         if (is_array($curl_options)) {
             $this->curl_options = $curl_options;
@@ -103,19 +102,18 @@ class wsdl extends nusoap_base
         // imports
         // TODO: handle imports more properly, grabbing them in-line and nesting them
         $imported_urls = array();
-        $imported      = 1;
+        $imported = 1;
         while ($imported > 0) {
             $imported = 0;
             // Schema imports
             foreach ($this->schemas as $ns => $list) {
-                foreach ($list as $xs) {
+                foreach ($list as $xsKey => $xs) {
                     $wsdlparts = parse_url($this->wsdl);    // this is bogusly simple!
                     foreach ($xs->imports as $ns2 => $list2) {
-                        $countList2I2 = count($list2);
-                        for ($ii = 0; $ii < $countList2I2; $ii++) {
+                        for ($ii = 0; $ii < count($list2); $ii++) {
                             if (array_key_exists($ii, $list2) && (!isset($list2[$ii]['loaded']) || !$list2[$ii]['loaded'])) {
-                                $this->schemas[$ns][$ns2]->imports[$ns2][$ii]['loaded'] = true;
-                                $url                                                    = $list2[$ii]['location'];
+                                @$this->schemas[$ns][$xsKey]->imports[$ns2][$ii]['loaded'] = true;
+                                $url = $list2[$ii]['location'];
                                 if ($url != '') {
                                     $urlparts = parse_url($url);
                                     if (!isset($urlparts['host'])) {
@@ -138,11 +136,10 @@ class wsdl extends nusoap_base
             // WSDL imports
             $wsdlparts = parse_url($this->wsdl);    // this is bogusly simple!
             foreach ($this->import as $ns => $list) {
-                $countListI2 = count($list);
-                for ($ii = 0; $ii < $countListI2; $ii++) {
+                for ($ii = 0; $ii < count($list); $ii++) {
                     if (!$list[$ii]['loaded']) {
                         $this->import[$ns][$ii]['loaded'] = true;
-                        $url                              = $list[$ii]['location'];
+                        $url = $list[$ii]['location'];
                         if ($url != '') {
                             $urlparts = parse_url($url);
                             if (!isset($urlparts['host'])) {
@@ -166,7 +163,7 @@ class wsdl extends nusoap_base
             if (isset($bindingData['operations']) && is_array($bindingData['operations'])) {
                 foreach ($bindingData['operations'] as $operation => $data) {
                     $this->debug('post-parse data gathering for ' . $operation);
-                    $this->bindings[$binding]['operations'][$operation]['input']  =
+                    $this->bindings[$binding]['operations'][$operation]['input'] =
                         isset($this->bindings[$binding]['operations'][$operation]['input']) ?
                             array_merge($this->bindings[$binding]['operations'][$operation]['input'], $this->portTypes[$bindingData['portType']][$operation]['input']) :
                             $this->portTypes[$bindingData['portType']][$operation]['input'];
@@ -184,9 +181,9 @@ class wsdl extends nusoap_base
                     if (isset($bindingData['style']) && !isset($this->bindings[$binding]['operations'][$operation]['style'])) {
                         $this->bindings[$binding]['operations'][$operation]['style'] = $bindingData['style'];
                     }
-                    $this->bindings[$binding]['operations'][$operation]['transport']     = isset($bindingData['transport']) ? $bindingData['transport'] : '';
+                    $this->bindings[$binding]['operations'][$operation]['transport'] = isset($bindingData['transport']) ? $bindingData['transport'] : '';
                     $this->bindings[$binding]['operations'][$operation]['documentation'] = isset($this->portTypes[$bindingData['portType']][$operation]['documentation']) ? $this->portTypes[$bindingData['portType']][$operation]['documentation'] : '';
-                    $this->bindings[$binding]['operations'][$operation]['endpoint']      = isset($bindingData['endpoint']) ? $bindingData['endpoint'] : '';
+                    $this->bindings[$binding]['operations'][$operation]['endpoint'] = isset($bindingData['endpoint']) ? $bindingData['endpoint'] : '';
                 }
             }
         }
@@ -196,7 +193,6 @@ class wsdl extends nusoap_base
      * parses the wsdl document
      *
      * @param string $wsdl path or URL
-     *
      * @access private
      */
     function parseWSDL($wsdl = '')
@@ -206,7 +202,6 @@ class wsdl extends nusoap_base
         if ($wsdl == '') {
             $this->debug('no wsdl passed to parseWSDL()!!');
             $this->setError('no wsdl passed to parseWSDL()!!');
-
             return false;
         }
 
@@ -216,9 +211,9 @@ class wsdl extends nusoap_base
         if (isset($wsdl_props['scheme']) && ($wsdl_props['scheme'] == 'http' || $wsdl_props['scheme'] == 'https')) {
             $this->debug('getting WSDL http(s) URL ' . $wsdl);
             // get wsdl
-            $tr                 = new soap_transport_http($wsdl, $this->curl_options, $this->use_curl);
+            $tr = new soap_transport_http($wsdl, $this->curl_options, $this->use_curl);
             $tr->request_method = 'GET';
-            $tr->useSOAPAction  = false;
+            $tr->useSOAPAction = false;
             if ($this->proxyhost && $this->proxyport) {
                 $tr->setProxy($this->proxyhost, $this->proxyport, $this->proxyusername, $this->proxypassword);
             }
@@ -236,7 +231,6 @@ class wsdl extends nusoap_base
                 $this->debug($errstr);
                 $this->setError($errstr);
                 unset($tr);
-
                 return false;
             }
             unset($tr);
@@ -259,7 +253,6 @@ class wsdl extends nusoap_base
                 $errstr = "Bad path to WSDL file $path";
                 $this->debug($errstr);
                 $this->setError($errstr);
-
                 return false;
             }
         }
@@ -289,7 +282,6 @@ class wsdl extends nusoap_base
             $this->setError($errstr);
             xml_parser_free($this->parser);
             unset($this->parser);
-
             return false;
         }
         // free the parser
@@ -300,7 +292,6 @@ class wsdl extends nusoap_base
         if ($this->getError()) {
             return false;
         }
-
         return true;
     }
 
@@ -308,9 +299,8 @@ class wsdl extends nusoap_base
      * start-element handler
      *
      * @param string $parser XML parser object
-     * @param string $name   element name
-     * @param string $attrs  associative array of attributes
-     *
+     * @param string $name element name
+     * @param string $attrs associative array of attributes
      * @access private
      */
     function start_element($parser, $name, $attrs)
@@ -322,18 +312,18 @@ class wsdl extends nusoap_base
         } elseif (preg_match('/schema$/', $name)) {
             $this->debug('Parsing WSDL schema');
             // $this->debug("startElement for $name ($attrs[name]). status = $this->status (".$this->getLocalPart($name).")");
-            $this->status        = 'schema';
+            $this->status = 'schema';
             $this->currentSchema = new nusoap_xmlschema('', '', $this->namespaces);
             $this->currentSchema->schemaStartElement($parser, $name, $attrs);
             $this->appendDebug($this->currentSchema->getDebug());
             $this->currentSchema->clearDebug();
         } else {
             // position in the total number of elements, starting from 0
-            $pos   = $this->position++;
+            $pos = $this->position++;
             $depth = $this->depth++;
             // set self as current value for this depth
             $this->depth_array[$depth] = $pos;
-            $this->message[$pos]       = array('cdata' => '');
+            $this->message[$pos] = array('cdata' => '');
             // process attributes
             if (count($attrs) > 0) {
                 // register namespace declarations
@@ -345,7 +335,7 @@ class wsdl extends nusoap_base
                             $this->namespaces['ns' . (count($this->namespaces) + 1)] = $v;
                         }
                         if ($v == 'http://www.w3.org/2001/XMLSchema' || $v == 'http://www.w3.org/1999/XMLSchema' || $v == 'http://www.w3.org/2000/10/XMLSchema') {
-                            $this->XMLSchemaVersion  = $v;
+                            $this->XMLSchemaVersion = $v;
                             $this->namespaces['xsi'] = $v . '-instance';
                         }
                     }
@@ -364,7 +354,7 @@ class wsdl extends nusoap_base
             }
             // Set default prefix and namespace
             // to prevent error Undefined variable $prefix and $namespace if (preg_match('/:/', $name)) return 0 or FALSE
-            $prefix    = '';
+            $prefix = '';
             $namespace = '';
             // get element prefix, namespace and name
             if (preg_match('/:/', $name)) {
@@ -404,7 +394,7 @@ class wsdl extends nusoap_base
                             break;
                         // merge input/output data
                         default:
-                            $m                                                                                      = isset($attrs['message']) ? $this->getLocalPart($attrs['message']) : '';
+                            $m = isset($attrs['message']) ? $this->getLocalPart($attrs['message']) : '';
                             $this->portTypes[$this->currentPortType][$this->currentPortOperation][$name]['message'] = $m;
                             break;
                     }
@@ -431,8 +421,8 @@ class wsdl extends nusoap_base
                             if (isset($attrs['name'])) {
                                 $this->currentOperation = $attrs['name'];
                                 $this->debug("current binding operation: $this->currentOperation");
-                                $this->bindings[$this->currentBinding]['operations'][$this->currentOperation]['name']     = $attrs['name'];
-                                $this->bindings[$this->currentBinding]['operations'][$this->currentOperation]['binding']  = $this->currentBinding;
+                                $this->bindings[$this->currentBinding]['operations'][$this->currentOperation]['name'] = $attrs['name'];
+                                $this->bindings[$this->currentBinding]['operations'][$this->currentOperation]['binding'] = $this->currentBinding;
                                 $this->bindings[$this->currentBinding]['operations'][$this->currentOperation]['endpoint'] = isset($this->bindings[$this->currentBinding]['endpoint']) ? $this->bindings[$this->currentBinding]['endpoint'] : '';
                             }
                             break;
@@ -460,10 +450,10 @@ class wsdl extends nusoap_base
 
                             break;
                         case 'address':
-                            $this->ports[$this->currentPort]['location']                                = $attrs['location'];
-                            $this->ports[$this->currentPort]['bindingType']                             = $namespace;
+                            $this->ports[$this->currentPort]['location'] = $attrs['location'];
+                            $this->ports[$this->currentPort]['bindingType'] = $namespace;
                             $this->bindings[$this->ports[$this->currentPort]['binding']]['bindingType'] = $namespace;
-                            $this->bindings[$this->ports[$this->currentPort]['binding']]['endpoint']    = $attrs['location'];
+                            $this->bindings[$this->ports[$this->currentPort]['binding']]['endpoint'] = $attrs['location'];
                             break;
                     }
                     break;
@@ -487,14 +477,14 @@ class wsdl extends nusoap_base
                 //	$this->status = 'schema';
                 //	break;
                 case 'message':
-                    $this->status                   = 'message';
+                    $this->status = 'message';
                     $this->messages[$attrs['name']] = array();
-                    $this->currentMessage           = $attrs['name'];
+                    $this->currentMessage = $attrs['name'];
                     break;
                 case 'portType':
-                    $this->status                    = 'portType';
+                    $this->status = 'portType';
                     $this->portTypes[$attrs['name']] = array();
-                    $this->currentPortType           = $attrs['name'];
+                    $this->currentPortType = $attrs['name'];
                     break;
                 case "binding":
                     if (isset($attrs['name'])) {
@@ -504,14 +494,14 @@ class wsdl extends nusoap_base
                         } else {
                             $this->currentBinding = $attrs['name'];
                         }
-                        $this->status                                      = 'binding';
+                        $this->status = 'binding';
                         $this->bindings[$this->currentBinding]['portType'] = $this->getLocalPart($attrs['type']);
                         $this->debug("current binding: $this->currentBinding of portType: " . $attrs['type']);
                     }
                     break;
                 case 'service':
                     $this->serviceName = $attrs['name'];
-                    $this->status      = 'service';
+                    $this->status = 'service';
                     $this->debug('current service: ' . $this->serviceName);
                     break;
                 case 'definitions':
@@ -527,8 +517,7 @@ class wsdl extends nusoap_base
      * end-element handler
      *
      * @param string $parser XML parser object
-     * @param string $name   element name
-     *
+     * @param string $name element name
      * @access private
      */
     function end_element($parser, $name)
@@ -561,8 +550,7 @@ class wsdl extends nusoap_base
      * element content handler
      *
      * @param string $parser XML parser object
-     * @param string $data   element content
-     *
+     * @param string $data element content
      * @access private
      */
     function character_data($parser, $data)
@@ -579,20 +567,19 @@ class wsdl extends nusoap_base
     /**
      * if authenticating, set user credentials here
      *
-     * @param string $username
-     * @param string $password
-     * @param string $authtype    (basic|digest|certificate|ntlm)
-     * @param array  $certRequest (keys must be cainfofile (optional), sslcertfile, sslkeyfile, passphrase, certpassword (optional), verifypeer (optional), verifyhost (optional): see corresponding options in cURL docs)
-     *
+     * @param    string $username
+     * @param    string $password
+     * @param    string $authtype (basic|digest|certificate|ntlm)
+     * @param    array $certRequest (keys must be cainfofile (optional), sslcertfile, sslkeyfile, passphrase, certpassword (optional), verifypeer (optional), verifyhost (optional): see corresponding options in cURL docs)
      * @access   public
      */
     function setCredentials($username, $password, $authtype = 'basic', $certRequest = array())
     {
         $this->debug("setCredentials username=$username authtype=$authtype certRequest=");
         $this->appendDebug($this->varDump($certRequest));
-        $this->username    = $username;
-        $this->password    = $password;
-        $this->authtype    = $authtype;
+        $this->username = $username;
+        $this->password = $password;
+        $this->authtype = $authtype;
         $this->certRequest = $certRequest;
     }
 
@@ -606,9 +593,8 @@ class wsdl extends nusoap_base
     /**
      * returns an assoc array of operation names => operation data
      *
-     * @param string $portName    WSDL port name
+     * @param string $portName WSDL port name
      * @param string $bindingType eg: soap, smtp, dime (only soap and soap12 are currently supported)
-     *
      * @return array
      * @access public
      */
@@ -642,16 +628,14 @@ class wsdl extends nusoap_base
         if (count($ops) == 0) {
             $this->debug("getOperations found no operations for port '$portName' bindingType $bindingType");
         }
-
         return $ops;
     }
 
     /**
      * returns an associative array of data necessary for calling an operation
      *
-     * @param string $operation   name of operation
+     * @param string $operation name of operation
      * @param string $bindingType type of binding eg: soap, soap12
-     *
      * @return array
      * @access public
      */
@@ -672,7 +656,6 @@ class wsdl extends nusoap_base
                     // note that we could/should also check the namespace here
                     if ($operation == $bOperation) {
                         $opData = $this->bindings[$portData['binding']]['operations'][$operation];
-
                         return $opData;
                     }
                 }
@@ -683,9 +666,8 @@ class wsdl extends nusoap_base
     /**
      * returns an associative array of data necessary for calling an operation
      *
-     * @param string $soapAction  soapAction for operation
+     * @param string $soapAction soapAction for operation
      * @param string $bindingType type of binding eg: soap, soap12
-     *
      * @return array
      * @access public
      */
@@ -723,11 +705,10 @@ class wsdl extends nusoap_base
      *    )
      *
      * @param string $type the type
-     * @param string $ns   namespace (not prefix) of the type
-     *
+     * @param string $ns namespace (not prefix) of the type
      * @return mixed
      * @access public
-     * @see    nusoap_xmlschema
+     * @see nusoap_xmlschema
      */
     function getTypeDef($type, $ns)
     {
@@ -747,10 +728,9 @@ class wsdl extends nusoap_base
         }
         if (isset($this->schemas[$ns])) {
             $this->debug("in getTypeDef: have schema for namespace $ns");
-            $countSchemasNs = count($this->schemas[$ns]);
-            for ($i = 0; $i < $countSchemasNs; $i++) {
+            for ($i = 0; $i < count($this->schemas[$ns]); $i++) {
                 $xs = &$this->schemas[$ns][$i];
-                $t  = $xs->getTypeDef($type);
+                $t = $xs->getTypeDef($type);
                 $this->appendDebug($xs->getDebug());
                 $xs->clearDebug();
                 if ($t) {
@@ -758,8 +738,8 @@ class wsdl extends nusoap_base
                     if (!isset($t['phpType'])) {
                         // get info for type to tack onto the element
                         $uqType = substr($t['type'], strrpos($t['type'], ':') + 1);
-                        $ns     = substr($t['type'], 0, strrpos($t['type'], ':'));
-                        $etype  = $this->getTypeDef($uqType, $ns);
+                        $ns = substr($t['type'], 0, strrpos($t['type'], ':'));
+                        $etype = $this->getTypeDef($uqType, $ns);
                         if ($etype) {
                             $this->debug("found type for [element] $type:");
                             $this->debug($this->varDump($etype));
@@ -776,7 +756,6 @@ class wsdl extends nusoap_base
                             $this->debug("did not find type for [element] $type");
                         }
                     }
-
                     return $t;
                 }
             }
@@ -784,7 +763,6 @@ class wsdl extends nusoap_base
         } else {
             $this->debug("in getTypeDef: do not have schema for namespace $ns");
         }
-
         return false;
     }
 
@@ -918,7 +896,6 @@ class wsdl extends nusoap_base
 				<ul>
 			</div>
 		</div></body></html>';
-
         return $b;
     }
 
@@ -926,7 +903,6 @@ class wsdl extends nusoap_base
      * serialize the parsed wsdl
      *
      * @param mixed $debug whether to put debug=1 in endpoint URL
-     *
      * @return string serialization of WSDL
      * @access public
      */
@@ -989,9 +965,9 @@ class wsdl extends nusoap_base
                                 die("$partType has no namespace!");
                             }
                         }
-                        $ns        = $this->getNamespaceFromPrefix($typePrefix);
+                        $ns = $this->getNamespaceFromPrefix($typePrefix);
                         $localPart = $this->getLocalPart($partType);
-                        $typeDef   = $this->getTypeDef($localPart, $ns);
+                        $typeDef = $this->getTypeDef($localPart, $ns);
                         if (isset($typeDef['typeClass']) && $typeDef['typeClass'] == 'element') {
                             $elementortype = 'element';
                             if (substr($localPart, -1) == '^') {
@@ -1008,11 +984,11 @@ class wsdl extends nusoap_base
         }
         // bindings & porttypes
         if (count($this->bindings) >= 1) {
-            $binding_xml  = '';
+            $binding_xml = '';
             $portType_xml = '';
             foreach ($this->bindings as $bindingName => $attrs) {
-                $binding_xml  .= "\n<binding name=\"" . $bindingName . '" type="tns:' . $attrs['portType'] . '">';
-                $binding_xml  .= "\n" . '  <soap:binding style="' . $attrs['style'] . '" transport="' . $attrs['transport'] . '"/>';
+                $binding_xml .= "\n<binding name=\"" . $bindingName . '" type="tns:' . $attrs['portType'] . '">';
+                $binding_xml .= "\n" . '  <soap:binding style="' . $attrs['style'] . '" transport="' . $attrs['transport'] . '"/>';
                 $portType_xml .= "\n<portType name=\"" . $attrs['portType'] . '">';
                 foreach ($attrs['operations'] as $opName => $opParts) {
                     $binding_xml .= "\n" . '  <operation name="' . $opName . '">';
@@ -1028,8 +1004,8 @@ class wsdl extends nusoap_base
                     } else {
                         $enc_style = '';
                     }
-                    $binding_xml  .= "\n" . '    <output><soap:body use="' . $opParts['output']['use'] . '" namespace="' . $opParts['output']['namespace'] . '"' . $enc_style . '/></output>';
-                    $binding_xml  .= "\n" . '  </operation>';
+                    $binding_xml .= "\n" . '    <output><soap:body use="' . $opParts['output']['use'] . '" namespace="' . $opParts['output']['namespace'] . '"' . $enc_style . '/></output>';
+                    $binding_xml .= "\n" . '  </operation>';
                     $portType_xml .= "\n" . '  <operation name="' . $opParts['name'] . '"';
                     if (isset($opParts['parameterOrder'])) {
                         $portType_xml .= ' parameterOrder="' . $opParts['parameterOrder'] . '"';
@@ -1043,7 +1019,7 @@ class wsdl extends nusoap_base
                     $portType_xml .= "\n" . '  </operation>';
                 }
                 $portType_xml .= "\n" . '</portType>';
-                $binding_xml  .= "\n" . '</binding>';
+                $binding_xml .= "\n" . '</binding>';
             }
             $xml .= $portType_xml . $binding_xml;
         }
@@ -1057,7 +1033,6 @@ class wsdl extends nusoap_base
             }
         }
         $xml .= "\n" . '</service>';
-
         return $xml . "\n</definitions>";
     }
 
@@ -1065,9 +1040,8 @@ class wsdl extends nusoap_base
      * determine whether a set of parameters are unwrapped
      * when they are expect to be wrapped, Microsoft-style.
      *
-     * @param string $type       the type (element name) of the wrapper
-     * @param array  $parameters the parameter values for the SOAP call
-     *
+     * @param string $type the type (element name) of the wrapper
+     * @param array $parameters the parameter values for the SOAP call
      * @return boolean whether they parameters are unwrapped (and should be wrapped)
      * @access private
      */
@@ -1079,7 +1053,7 @@ class wsdl extends nusoap_base
         // split type into namespace:unqualified-type
         if (strpos($type, ':')) {
             $uqType = substr($type, strrpos($type, ':') + 1);
-            $ns     = substr($type, 0, strrpos($type, ':'));
+            $ns = substr($type, 0, strrpos($type, ':'));
             $this->debug("in parametersMatchWrapped: got a prefixed type: $uqType, $ns");
             if ($this->getNamespaceFromPrefix($ns)) {
                 $ns = $this->getNamespaceFromPrefix($ns);
@@ -1089,14 +1063,13 @@ class wsdl extends nusoap_base
             // TODO: should the type be compared to types in XSD, and the namespace
             // set to XSD if the type matches?
             $this->debug("in parametersMatchWrapped: No namespace for type $type");
-            $ns     = '';
+            $ns = '';
             $uqType = $type;
         }
 
         // get the type information
         if (!$typeDef = $this->getTypeDef($uqType, $ns)) {
             $this->debug("in parametersMatchWrapped: $type ($uqType) is not a supported type.");
-
             return false;
         }
         $this->debug("in parametersMatchWrapped: found typeDef=");
@@ -1104,21 +1077,20 @@ class wsdl extends nusoap_base
         if (substr($uqType, -1) == '^') {
             $uqType = substr($uqType, 0, -1);
         }
-        $phpType   = $typeDef['phpType'];
+        $phpType = $typeDef['phpType'];
         $arrayType = (isset($typeDef['arrayType']) ? $typeDef['arrayType'] : '');
         $this->debug("in parametersMatchWrapped: uqType: $uqType, ns: $ns, phptype: $phpType, arrayType: $arrayType");
 
         // we expect a complexType or element of complexType
         if ($phpType != 'struct') {
             $this->debug("in parametersMatchWrapped: not a struct");
-
             return false;
         }
 
         // see whether the parameter names match the elements
         if (isset($typeDef['elements']) && is_array($typeDef['elements'])) {
             $elements = 0;
-            $matches  = 0;
+            $matches = 0;
             foreach ($typeDef['elements'] as $name => $attrs) {
                 if (isset($parameters[$name])) {
                     $this->debug("in parametersMatchWrapped: have parameter named $name");
@@ -1133,14 +1105,12 @@ class wsdl extends nusoap_base
             if ($matches == 0) {
                 return false;
             }
-
             return true;
         }
 
         // since there are no elements for the type, if the user passed no
         // parameters, the parameters match wrapped.
         $this->debug("in parametersMatchWrapped: no elements type $ns:$uqType");
-
         return count($parameters) == 0;
     }
 
@@ -1152,11 +1122,10 @@ class wsdl extends nusoap_base
      * - multi-ref serialization
      * - validate PHP values against type definitions, return errors if invalid
      *
-     * @param string $operation   operation name
-     * @param string $direction   (input|output)
-     * @param mixed  $parameters  parameter value(s)
+     * @param string $operation operation name
+     * @param string $direction (input|output)
+     * @param mixed $parameters parameter value(s)
      * @param string $bindingType (soap|soap12)
-     *
      * @return mixed parameters serialized as XML or false on error (e.g. operation not found)
      * @access public
      */
@@ -1168,13 +1137,11 @@ class wsdl extends nusoap_base
         if ($direction != 'input' && $direction != 'output') {
             $this->debug('The value of the \$direction argument needs to be either "input" or "output"');
             $this->setError('The value of the \$direction argument needs to be either "input" or "output"');
-
             return false;
         }
         if (!$opData = $this->getOperationData($operation, $bindingType)) {
             $this->debug('Unable to retrieve WSDL data for operation: ' . $operation . ' bindingType: ' . $bindingType);
             $this->setError('Unable to retrieve WSDL data for operation: ' . $operation . ' bindingType: ' . $bindingType);
-
             return false;
         }
         $this->debug('in serializeRPCParameters: opData:');
@@ -1184,20 +1151,20 @@ class wsdl extends nusoap_base
         $encodingStyle = 'http://schemas.xmlsoap.org/soap/encoding/';
         if (($direction == 'input') && isset($opData['output']['encodingStyle']) && ($opData['output']['encodingStyle'] != $encodingStyle)) {
             $encodingStyle = $opData['output']['encodingStyle'];
-            $enc_style     = $encodingStyle;
+            $enc_style = $encodingStyle;
         }
 
         // set input params
         $xml = '';
         if (isset($opData[$direction]['parts']) && sizeof($opData[$direction]['parts']) > 0) {
-            $parts      = &$opData[$direction]['parts'];
+            $parts = &$opData[$direction]['parts'];
             $part_count = sizeof($parts);
-            $style      = $opData['style'];
-            $use        = $opData[$direction]['use'];
+            $style = $opData['style'];
+            $use = $opData[$direction]['use'];
             $this->debug("have $part_count part(s) to serialize using $style/$use");
             if (is_array($parameters)) {
                 $parametersArrayType = $this->isArraySimpleOrStruct($parameters);
-                $parameter_count     = count($parameters);
+                $parameter_count = count($parameters);
                 $this->debug("have $parameter_count parameter(s) provided as $parametersArrayType to serialize");
                 // check for Microsoft-style wrapped parameters
                 if ($style == 'document' && $use == 'literal' && $part_count == 1 && isset($parts['parameters'])) {
@@ -1213,7 +1180,7 @@ class wsdl extends nusoap_base
                         $this->debug('check whether caller\'s parameters match the wrapped ones');
                         if ($this->parametersMatchWrapped($parts['parameters'], $parameters)) {
                             $this->debug('wrap the parameters for the caller');
-                            $parameters      = array('parameters' => $parameters);
+                            $parameters = array('parameters' => $parameters);
                             $parameter_count = 1;
                         }
                     }
@@ -1223,7 +1190,7 @@ class wsdl extends nusoap_base
                     // Track encoding style
                     if (isset($opData[$direction]['encodingStyle']) && $encodingStyle != $opData[$direction]['encodingStyle']) {
                         $encodingStyle = $opData[$direction]['encodingStyle'];
-                        $enc_style     = $encodingStyle;
+                        $enc_style = $encodingStyle;
                     } else {
                         $enc_style = false;
                     }
@@ -1247,7 +1214,6 @@ class wsdl extends nusoap_base
             }
         }
         $this->debug("serializeRPCParameters returning: $xml");
-
         return $xml;
     }
 
@@ -1258,10 +1224,9 @@ class wsdl extends nusoap_base
      * - multi-ref serialization
      * - validate PHP values against type definitions, return errors if invalid
      *
-     * @param string $operation  operation name
-     * @param string $direction  (input|output)
-     * @param mixed  $parameters parameter value(s)
-     *
+     * @param string $operation operation name
+     * @param string $direction (input|output)
+     * @param mixed $parameters parameter value(s)
      * @return mixed parameters serialized as XML or false on error (e.g. operation not found)
      * @access public
      * @deprecated
@@ -1274,13 +1239,11 @@ class wsdl extends nusoap_base
         if ($direction != 'input' && $direction != 'output') {
             $this->debug('The value of the \$direction argument needs to be either "input" or "output"');
             $this->setError('The value of the \$direction argument needs to be either "input" or "output"');
-
             return false;
         }
         if (!$opData = $this->getOperationData($operation)) {
             $this->debug('Unable to retrieve WSDL data for operation: ' . $operation);
             $this->setError('Unable to retrieve WSDL data for operation: ' . $operation);
-
             return false;
         }
         $this->debug('opData:');
@@ -1290,7 +1253,7 @@ class wsdl extends nusoap_base
         $encodingStyle = 'http://schemas.xmlsoap.org/soap/encoding/';
         if (($direction == 'input') && isset($opData['output']['encodingStyle']) && ($opData['output']['encodingStyle'] != $encodingStyle)) {
             $encodingStyle = $opData['output']['encodingStyle'];
-            $enc_style     = $encodingStyle;
+            $enc_style = $encodingStyle;
         }
 
         // set input params
@@ -1308,7 +1271,7 @@ class wsdl extends nusoap_base
                     // Track encoding style
                     if (isset($opData[$direction]['encodingStyle']) && $encodingStyle != $opData[$direction]['encodingStyle']) {
                         $encodingStyle = $opData[$direction]['encodingStyle'];
-                        $enc_style     = $encodingStyle;
+                        $enc_style = $encodingStyle;
                     } else {
                         $enc_style = false;
                     }
@@ -1332,20 +1295,18 @@ class wsdl extends nusoap_base
             }
         }
         $this->debug("serializeParameters returning: $xml");
-
         return $xml;
     }
 
     /**
      * serializes a PHP value according a given type definition
      *
-     * @param string  $name          name of value (part or element)
-     * @param string  $type          XML schema type of value (type or element)
-     * @param mixed   $value         a native PHP value (parameter value)
-     * @param string  $use           use for part (encoded|literal)
-     * @param string  $encodingStyle SOAP encoding style for the value (if different than the enclosing style)
-     * @param boolean $unqualified   a kludge for what should be XML namespace form handling
-     *
+     * @param string $name name of value (part or element)
+     * @param string $type XML schema type of value (type or element)
+     * @param mixed $value a native PHP value (parameter value)
+     * @param string $use use for part (encoded|literal)
+     * @param string $encodingStyle SOAP encoding style for the value (if different than the enclosing style)
+     * @param boolean $unqualified a kludge for what should be XML namespace form handling
      * @return string value serialized as an XML string
      * @access private
      */
@@ -1360,11 +1321,11 @@ class wsdl extends nusoap_base
         // if a soapval has been supplied, let its type override the WSDL
         if (is_object($value) && get_class($value) == 'soapval') {
             if ($value->type_ns) {
-                $type      = $value->type_ns . ':' . $value->type;
+                $type = $value->type_ns . ':' . $value->type;
                 $forceType = true;
                 $this->debug("in serializeType: soapval overrides type to $type");
             } elseif ($value->type) {
-                $type      = $value->type;
+                $type = $value->type;
                 $forceType = true;
                 $this->debug("in serializeType: soapval overrides type to $type");
             } else {
@@ -1390,7 +1351,7 @@ class wsdl extends nusoap_base
         $xml = '';
         if (strpos($type, ':')) {
             $uqType = substr($type, strrpos($type, ':') + 1);
-            $ns     = substr($type, 0, strrpos($type, ':'));
+            $ns = substr($type, 0, strrpos($type, ':'));
             $this->debug("in serializeType: got a prefixed type: $uqType, $ns");
             if ($this->getNamespaceFromPrefix($ns)) {
                 $ns = $this->getNamespaceFromPrefix($ns);
@@ -1413,7 +1374,6 @@ class wsdl extends nusoap_base
                         $xml = "<$name$elementNS xsi:nil=\"true\" xsi:type=\"" . $this->getPrefixFromNamespace($ns) . ":$uqType\"/>";
                     }
                     $this->debug("in serializeType: returning: $xml");
-
                     return $xml;
                 }
                 if ($uqType == 'Array') {
@@ -1447,7 +1407,6 @@ class wsdl extends nusoap_base
                         $xml = "<$name$elementNS xsi:type=\"" . $this->getPrefixFromNamespace($ns) . ":$uqType\"$encodingStyle>$value</$name>";
                     }
                     $this->debug("in serializeType: returning: $xml");
-
                     return $xml;
                 }
                 $this->debug('custom type extends XML Schema or SOAP Encoding namespace (yuck)');
@@ -1457,7 +1416,7 @@ class wsdl extends nusoap_base
                     $tt_prefix = $this->getPrefixFromNamespace('http://xml.apache.org/xml-soap');
                     if (!$tt_prefix) {
                         $this->debug('in serializeType: Add namespace for Apache SOAP type');
-                        $tt_prefix                    = 'ns' . rand(1000, 9999);
+                        $tt_prefix = 'ns' . rand(1000, 9999);
                         $this->namespaces[$tt_prefix] = 'http://xml.apache.org/xml-soap';
                         // force this to be added to usedNamespaces
                         $tt_prefix = $this->getPrefixFromNamespace('http://xml.apache.org/xml-soap');
@@ -1480,7 +1439,6 @@ class wsdl extends nusoap_base
                         $xml = "<$name xsi:type=\"" . $tt_prefix . ":$uqType\"$encodingStyle>$contents</$name>";
                     }
                     $this->debug("in serializeType: returning: $xml");
-
                     return $xml;
                 }
                 $this->debug('in serializeType: Apache SOAP type, but only support Map');
@@ -1489,13 +1447,12 @@ class wsdl extends nusoap_base
             // TODO: should the type be compared to types in XSD, and the namespace
             // set to XSD if the type matches?
             $this->debug("in serializeType: No namespace for type $type");
-            $ns     = '';
+            $ns = '';
             $uqType = $type;
         }
         if (!$typeDef = $this->getTypeDef($uqType, $ns)) {
             $this->setError("$type ($uqType) is not a supported type.");
             $this->debug("in serializeType: $type ($uqType) is not a supported type.");
-
             return false;
         } else {
             $this->debug("in serializeType: found typeDef");
@@ -1507,7 +1464,6 @@ class wsdl extends nusoap_base
         if (!isset($typeDef['phpType'])) {
             $this->setError("$type ($uqType) has no phpType.");
             $this->debug("in serializeType: $type ($uqType) has no phpType.");
-
             return false;
         }
         $phpType = $typeDef['phpType'];
@@ -1537,7 +1493,6 @@ class wsdl extends nusoap_base
                     $xml = "<$elementName$elementNS xsi:nil=\"true\" xsi:type=\"" . $this->getPrefixFromNamespace($ns) . ":$uqType\"/>";
                 }
                 $this->debug("in serializeType: returning: $xml");
-
                 return $xml;
             }
             if (is_object($value)) {
@@ -1597,21 +1552,20 @@ class wsdl extends nusoap_base
                            $this->getLocalPart($typeDef['arrayType']) . "[0]\"/>";
                 }
                 $this->debug("in serializeType: returning: $xml");
-
                 return $xml;
             }
             if (isset($typeDef['multidimensional'])) {
                 $nv = array();
                 foreach ($value as $v) {
                     $cols = ',' . sizeof($v);
-                    $nv   = array_merge($nv, $v);
+                    $nv = array_merge($nv, $v);
                 }
                 $value = $nv;
             } else {
                 $cols = '';
             }
             if (is_array($value) && sizeof($value) >= 1) {
-                $rows     = sizeof($value);
+                $rows = sizeof($value);
                 $contents = '';
                 foreach ($value as $k => $v) {
                     //$this->debug breaks when serializing ArrayOfComplexType
@@ -1625,7 +1579,7 @@ class wsdl extends nusoap_base
                     }
                 }
             } else {
-                $rows     = 0;
+                $rows = 0;
                 $contents = null;
             }
             // TODO: for now, an empty value will be serialized as a zero element
@@ -1664,18 +1618,16 @@ class wsdl extends nusoap_base
             }
         }
         $this->debug("in serializeType: returning: $xml");
-
         return $xml;
     }
 
     /**
      * serializes the attributes for a complexType
      *
-     * @param array  $typeDef our internal representation of an XML schema type (or element)
-     * @param mixed  $value   a native PHP value (parameter value)
-     * @param string $ns      the namespace of the type
-     * @param string $uqType  the local part of the type
-     *
+     * @param array $typeDef our internal representation of an XML schema type (or element)
+     * @param mixed $value a native PHP value (parameter value)
+     * @param string $ns the namespace of the type
+     * @param string $uqType the local part of the type
      * @return string value serialized as an XML string
      * @access private
      */
@@ -1684,7 +1636,7 @@ class wsdl extends nusoap_base
         $this->debug("serializeComplexTypeAttributes for XML Schema type $ns:$uqType");
         $xml = '';
         if (isset($typeDef['extensionBase'])) {
-            $nsx     = $this->getPrefix($typeDef['extensionBase']);
+            $nsx = $this->getPrefix($typeDef['extensionBase']);
             $uqTypex = $this->getLocalPart($typeDef['extensionBase']);
             if ($this->getNamespaceFromPrefix($nsx)) {
                 $nsx = $this->getNamespaceFromPrefix($nsx);
@@ -1714,7 +1666,7 @@ class wsdl extends nusoap_base
                     $xname = $aName;
                     $this->debug("value provided for attribute $aName with key $xname");
                 } elseif (isset($attrs['default'])) {
-                    $xname          = '!' . $aName;
+                    $xname = '!' . $aName;
                     $xvalue[$xname] = $attrs['default'];
                     $this->debug('use default value of ' . $xvalue[$aName] . ' for attribute ' . $aName);
                 } else {
@@ -1728,20 +1680,18 @@ class wsdl extends nusoap_base
         } else {
             $this->debug("no attributes to serialize for XML Schema type $ns:$uqType");
         }
-
         return $xml;
     }
 
     /**
      * serializes the elements for a complexType
      *
-     * @param array  $typeDef       our internal representation of an XML schema type (or element)
-     * @param mixed  $value         a native PHP value (parameter value)
-     * @param string $ns            the namespace of the type
-     * @param string $uqType        the local part of the type
-     * @param string $use           use for part (encoded|literal)
+     * @param array $typeDef our internal representation of an XML schema type (or element)
+     * @param mixed $value a native PHP value (parameter value)
+     * @param string $ns the namespace of the type
+     * @param string $uqType the local part of the type
+     * @param string $use use for part (encoded|literal)
      * @param string $encodingStyle SOAP encoding style for the value (if different than the enclosing style)
-     *
      * @return string value serialized as an XML string
      * @access private
      */
@@ -1750,7 +1700,7 @@ class wsdl extends nusoap_base
         $this->debug("in serializeComplexTypeElements for XML Schema type $ns:$uqType");
         $xml = '';
         if (isset($typeDef['extensionBase'])) {
-            $nsx     = $this->getPrefix($typeDef['extensionBase']);
+            $nsx = $this->getPrefix($typeDef['extensionBase']);
             $uqTypex = $this->getLocalPart($typeDef['extensionBase']);
             if ($this->getNamespaceFromPrefix($nsx)) {
                 $nsx = $this->getNamespaceFromPrefix($nsx);
@@ -1837,7 +1787,6 @@ class wsdl extends nusoap_base
         } else {
             $this->debug("no elements to serialize for XML Schema type $ns:$uqType");
         }
-
         return $xml;
     }
 
@@ -1845,15 +1794,14 @@ class wsdl extends nusoap_base
      * adds an XML Schema complex type to the WSDL types
      *
      * @param string $name
-     * @param string $typeClass       (complexType|simpleType|attribute)
-     * @param string $phpType         currently supported are array and struct (php assoc array)
-     * @param string $compositor      (all|sequence|choice)
+     * @param string $typeClass (complexType|simpleType|attribute)
+     * @param string $phpType currently supported are array and struct (php assoc array)
+     * @param string $compositor (all|sequence|choice)
      * @param string $restrictionBase namespace:name (http://schemas.xmlsoap.org/soap/encoding/:Array)
-     * @param array  $elements        e.g. array ( name => array(name=>'',type=>'') )
-     * @param array  $attrs           e.g. array(array('ref'=>'SOAP-ENC:arrayType','wsdl:arrayType'=>'xsd:string[]'))
-     * @param string $arrayType       as namespace:name (xsd:string)
-     *
-     * @see    nusoap_xmlschema
+     * @param array $elements e.g. array ( name => array(name=>'',type=>'') )
+     * @param array $attrs e.g. array(array('ref'=>'SOAP-ENC:arrayType','wsdl:arrayType'=>'xsd:string[]'))
+     * @param string $arrayType as namespace:name (xsd:string)
+     * @see nusoap_xmlschema
      * @access public
      */
     function addComplexType($name, $typeClass = 'complexType', $phpType = 'array', $compositor = '', $restrictionBase = '', $elements = array(), $attrs = array(), $arrayType = '')
@@ -1864,8 +1812,8 @@ class wsdl extends nusoap_base
                 // expand each element
                 $ee = array();
                 foreach ($e as $k => $v) {
-                    $k      = strpos($k, ':') ? $this->expandQname($k) : $k;
-                    $v      = strpos($v, ':') ? $this->expandQname($v) : $v;
+                    $k = strpos($k, ':') ? $this->expandQname($k) : $k;
+                    $v = strpos($v, ':') ? $this->expandQname($v) : $v;
                     $ee[$k] = $v;
                 }
                 $eElements[$n] = $ee;
@@ -1877,8 +1825,8 @@ class wsdl extends nusoap_base
             foreach ($attrs as $n => $a) {
                 // expand each attribute
                 foreach ($a as $k => $v) {
-                    $k      = strpos($k, ':') ? $this->expandQname($k) : $k;
-                    $v      = strpos($v, ':') ? $this->expandQname($v) : $v;
+                    $k = strpos($k, ':') ? $this->expandQname($k) : $k;
+                    $v = strpos($v, ':') ? $this->expandQname($v) : $v;
                     $aa[$k] = $v;
                 }
                 $eAttrs[$n] = $aa;
@@ -1887,7 +1835,7 @@ class wsdl extends nusoap_base
         }
 
         $restrictionBase = strpos($restrictionBase, ':') ? $this->expandQname($restrictionBase) : $restrictionBase;
-        $arrayType       = strpos($arrayType, ':') ? $this->expandQname($arrayType) : $arrayType;
+        $arrayType = strpos($arrayType, ':') ? $this->expandQname($arrayType) : $arrayType;
 
         $typens = isset($this->namespaces['types']) ? $this->namespaces['types'] : $this->namespaces['tns'];
         $this->schemas[$typens][0]->addComplexType($name, $typeClass, $phpType, $compositor, $restrictionBase, $elements, $attrs, $arrayType);
@@ -1898,11 +1846,10 @@ class wsdl extends nusoap_base
      *
      * @param string $name
      * @param string $restrictionBase namespace:name (http://schemas.xmlsoap.org/soap/encoding/:Array)
-     * @param string $typeClass       (should always be simpleType)
-     * @param string $phpType         (should always be scalar)
-     * @param array  $enumeration     array of values
-     *
-     * @see    nusoap_xmlschema
+     * @param string $typeClass (should always be simpleType)
+     * @param string $phpType (should always be scalar)
+     * @param array $enumeration array of values
+     * @see nusoap_xmlschema
      * @access public
      */
     function addSimpleType($name, $restrictionBase = '', $typeClass = 'simpleType', $phpType = 'scalar', $enumeration = array())
@@ -1917,8 +1864,7 @@ class wsdl extends nusoap_base
      * adds an element to the WSDL types
      *
      * @param array $attrs attributes that must include name and type
-     *
-     * @see    nusoap_xmlschema
+     * @see nusoap_xmlschema
      * @access public
      */
     function addElement($attrs)
@@ -1930,19 +1876,19 @@ class wsdl extends nusoap_base
     /**
      * register an operation with the server
      *
-     * @param string $name          operation (method) name
-     * @param array  $in            assoc array of input values: key = param name, value = param type
-     * @param array  $out           assoc array of output values: key = param name, value = param type
-     * @param string $namespace     optional The namespace for the operation
-     * @param string $soapaction    optional The soapaction for the operation
-     * @param string $style         (rpc|document) optional The style for the operation Note: when 'document' is specified, parameter and return wrappers are created for you automatically
-     * @param string $use           (encoded|literal) optional The use for the parameters (cannot mix right now)
+     * @param string $name operation (method) name
+     * @param array $in assoc array of input values: key = param name, value = param type
+     * @param array $out assoc array of output values: key = param name, value = param type
+     * @param string $namespace optional The namespace for the operation
+     * @param string $soapaction optional The soapaction for the operation
+     * @param string $style (rpc|document) optional The style for the operation Note: when 'document' is specified, parameter and return wrappers are created for you automatically
+     * @param string $use (encoded|literal) optional The use for the parameters (cannot mix right now)
      * @param string $documentation optional The description to include in the WSDL
      * @param string $encodingStyle optional (usually 'http://schemas.xmlsoap.org/soap/encoding/' for encoded)
-     *
+     * @param string $customResponseTagName optional Name of the outgoing response
      * @access public
      */
-    function addOperation($name, $in = false, $out = false, $namespace = false, $soapaction = false, $style = 'rpc', $use = 'encoded', $documentation = '', $encodingStyle = '')
+    function addOperation($name, $in = false, $out = false, $namespace = false, $soapaction = false, $style = 'rpc', $use = 'encoded', $documentation = '', $encodingStyle = '', $customResponseTagName = '')
     {
         if ($use == 'encoded' && $encodingStyle == '') {
             $encodingStyle = 'http://schemas.xmlsoap.org/soap/encoding/';
@@ -1962,32 +1908,32 @@ class wsdl extends nusoap_base
                 $elements[$n] = array('name' => $n, 'type' => $t, 'form' => 'unqualified');
             }
             $this->addComplexType($name . 'ResponseType', 'complexType', 'struct', 'all', '', $elements);
-            $this->addElement(array('name' => $name . 'Response', 'type' => $name . 'ResponseType', 'form' => 'qualified'));
-            $out = array('parameters' => 'tns:' . $name . 'Response' . '^');
+            $this->addElement(array('name' => $customResponseTagName, 'type' => $name . 'ResponseType', 'form' => 'qualified'));
+            $out = array('parameters' => 'tns:' . $customResponseTagName . '^');
         }
 
         // get binding
         $this->bindings[$this->serviceName . 'Binding']['operations'][$name] =
             array(
-                'name'          => $name,
-                'binding'       => $this->serviceName . 'Binding',
-                'endpoint'      => $this->endpoint,
-                'soapAction'    => $soapaction,
-                'style'         => $style,
-                'input'         => array(
-                    'use'           => $use,
-                    'namespace'     => $namespace,
+                'name' => $name,
+                'binding' => $this->serviceName . 'Binding',
+                'endpoint' => $this->endpoint,
+                'soapAction' => $soapaction,
+                'style' => $style,
+                'input' => array(
+                    'use' => $use,
+                    'namespace' => $namespace,
                     'encodingStyle' => $encodingStyle,
-                    'message'       => $name . 'Request',
-                    'parts'         => $in),
-                'output'        => array(
-                    'use'           => $use,
-                    'namespace'     => $namespace,
+                    'message' => $name,
+                    'parts' => $in),
+                'output' => array(
+                    'use' => $use,
+                    'namespace' => $namespace,
                     'encodingStyle' => $encodingStyle,
-                    'message'       => $name . 'Response',
-                    'parts'         => $out),
-                'namespace'     => $namespace,
-                'transport'     => 'http://schemas.xmlsoap.org/soap/http',
+                    'message' => $customResponseTagName,
+                    'parts' => $out),
+                'namespace' => $namespace,
+                'transport' => 'http://schemas.xmlsoap.org/soap/http',
                 'documentation' => $documentation);
         // add portTypes
         // add messages
@@ -1996,22 +1942,21 @@ class wsdl extends nusoap_base
                 if (strpos($pType, ':')) {
                     $pType = $this->getNamespaceFromPrefix($this->getPrefix($pType)) . ":" . $this->getLocalPart($pType);
                 }
-                $this->messages[$name . 'Request'][$pName] = $pType;
+                $this->messages[$name][$pName] = $pType;
             }
         } else {
-            $this->messages[$name . 'Request'] = '0';
+            $this->messages[$name] = '0';
         }
         if ($out) {
             foreach ($out as $pName => $pType) {
                 if (strpos($pType, ':')) {
                     $pType = $this->getNamespaceFromPrefix($this->getPrefix($pType)) . ":" . $this->getLocalPart($pType);
                 }
-                $this->messages[$name . 'Response'][$pName] = $pType;
+                $this->messages[$customResponseTagName][$pName] = $pType;
             }
         } else {
-            $this->messages[$name . 'Response'] = '0';
+            $this->messages[$customResponseTagName] = '0';
         }
-
         return true;
     }
 }

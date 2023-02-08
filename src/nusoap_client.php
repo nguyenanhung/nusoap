@@ -25,6 +25,10 @@ namespace nguyenanhung\MyNuSOAP;
 class nusoap_client extends nusoap_base
 {
 
+    var $attachments = '';
+    var $return = null;
+    var $operation = '';
+    var $opData = array();
     var $username = '';                // Username for HTTP authentication
     var $password = '';                // Password for HTTP authentication
     var $authtype = '';                // Type of HTTP authentication
@@ -545,6 +549,8 @@ class nusoap_client extends nusoap_base
             $return = $parser->get_soapbody();
             // add document for doclit support
             $this->document = $parser->document;
+            // Add attachments
+            $this->attachments = $parser->attachments;
             // destroy the parser object
             unset($parser);
             // return decode message
