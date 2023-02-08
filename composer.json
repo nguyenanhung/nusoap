@@ -1,7 +1,7 @@
 {
     "name": "nguyenanhung/nusoap",
     "type": "library",
-    "description": "My nuSOAP Library, fix code for for PHP 7.4 <=> 5.4",
+    "description": "My nuSOAP Library, fix code for for PHP 8.2 <=> 5.4",
     "keywords": [
         "soap",
         "nusoap"
