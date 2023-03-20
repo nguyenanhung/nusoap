@@ -1318,7 +1318,7 @@ class soap_transport_http extends nusoap_base
                     }
                 }
                 if ((isset($cookie['domain'])) && (!empty($cookie['domain']))) {
-                    $domain = preg_quote($cookie['domain']);
+                    $domain = preg_quote($cookie['domain'], "'");
                     if (!preg_match("'.*$domain$'i", $this->host)) {
                         $this->debug('cookie has different domain');
                         continue;

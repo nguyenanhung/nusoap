@@ -170,7 +170,7 @@ class nusoap_client extends nusoap_base
         $this->faultstring = '';
         $this->faultcode = '';
         $this->opData = array();
-
+        $usewrapped = false;
         $this->debug("call: operation=$operation, namespace=$namespace, soapAction=$soapAction, rpcParams=$rpcParams, style=$style, use=$use, endpointType=$this->endpointType");
         $this->appendDebug('params=' . $this->varDump($params));
         $this->appendDebug('headers=' . $this->varDump($headers));
@@ -244,6 +244,14 @@ class nusoap_client extends nusoap_base
             $nsPrefix = 'ns' . rand(1000, 9999);
             // serialize
             $payload = '';
+            if ($use = 'literal wrapped') {
+                // 'literal wrapped' is only sensible (and defined) for 'document'.
+                if ($style == 'document') {
+                    $usewrapped = true;
+                }
+                // For compatibility with the rest of the code:
+                $use = 'literal';
+            }
             if (is_string($params)) {
                 $this->debug("serializing param string for operation $operation");
                 $payload = $params;
@@ -264,6 +272,21 @@ class nusoap_client extends nusoap_base
                 $encodingStyle = '';
             }
         }
+        // wrap document/literal wrapped calls with operation element
+        if ($usewrapped) {
+            // (This code block was based on http://www.ibm.com/developerworks/webservices/library/ws-whichwsdl/
+            // and tailored to the needs of one specific SOAP server, where no nsPrefix was seen...
+            $this->debug("wrapping document request with literal method element");
+
+            if ($namespace) {
+                $payload = "<$operation xmlns=\"$namespace\">" .
+                           $payload .
+                           "</$operation>";
+            } else {
+                $payload = "<$operation>" . $payload . "</$operation>";
+            }
+        }
+
         // wrap RPC calls with method element
         if ($style == 'rpc') {
             if ($use == 'literal') {
