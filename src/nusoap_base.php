@@ -929,7 +929,7 @@ class nusoap_base
             $sec = time();
             $usec = 0;
         }
-        $dtx = new DateTime("@$sec");
+        $dtx = new \DateTime("@$sec");
 
         return
             date_format($dtx, 'Y-m-d H:i:s') . '.' . sprintf('%06d', $usec);
