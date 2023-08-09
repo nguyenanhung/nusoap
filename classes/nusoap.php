@@ -2228,7 +2228,8 @@ class soapval extends nusoap_base
  */
 class soap_transport_http extends nusoap_base
 {
-
+    var $errno = 0;
+    var $fp = null;
     var $query = '';
     var $tryagain = false;
     var $url = '';

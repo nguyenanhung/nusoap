@@ -14,8 +14,8 @@ namespace nguyenanhung\MyFixNuSOAP;
 class soap_transport_http extends nusoap_base
 {
 
-    var $fp;
-    var $errno;
+    var $errno = 0;
+    var $fp = null;
 
     var $query = '';
     var $tryagain = false;
