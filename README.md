@@ -1,4 +1,9 @@
-[![Latest Stable Version](http://poser.pugx.org/nguyenanhung/nusoap/v)](https://packagist.org/packages/nguyenanhung/nusoap) [![Total Downloads](http://poser.pugx.org/nguyenanhung/nusoap/downloads)](https://packagist.org/packages/nguyenanhung/nusoap) [![Latest Unstable Version](http://poser.pugx.org/nguyenanhung/nusoap/v/unstable)](https://packagist.org/packages/nguyenanhung/nusoap) [![License](http://poser.pugx.org/nguyenanhung/nusoap/license)](https://packagist.org/packages/nguyenanhung/nusoap) [![PHP Version Require](http://poser.pugx.org/nguyenanhung/nusoap/require/php)](https://packagist.org/packages/nguyenanhung/nusoap) [![Monthly Downloads](http://poser.pugx.org/nguyenanhung/nusoap/d/monthly)](https://packagist.org/packages/nguyenanhung/nusoap) [![Daily Downloads](http://poser.pugx.org/nguyenanhung/nusoap/d/daily)](https://packagist.org/packages/nguyenanhung/nusoap)
+[![Latest Stable Version](https://img.shields.io/packagist/v/nguyenanhung/nusoap.svg?style=flat-square)](https://packagist.org/packages/nguyenanhung/nusoap)
+[![Total Downloads](https://img.shields.io/packagist/dt/nguyenanhung/nusoap.svg?style=flat-square)](https://packagist.org/packages/nguyenanhung/nusoap)
+[![Daily Downloads](https://img.shields.io/packagist/dd/nguyenanhung/nusoap.svg?style=flat-square)](https://packagist.org/packages/nguyenanhung/nusoap)
+[![Monthly Downloads](https://img.shields.io/packagist/dm/nguyenanhung/nusoap.svg?style=flat-square)](https://packagist.org/packages/nguyenanhung/nusoap)
+[![License](https://img.shields.io/packagist/l/nguyenanhung/nusoap.svg?style=flat-square)](https://packagist.org/packages/nguyenanhung/nusoap)
+[![PHP Version Require](https://img.shields.io/packagist/dependency-v/nguyenanhung/nusoap/php)](https://packagist.org/packages/nguyenanhung/nusoap)
 
 # NuSoap - Fix for Php >= 5.4 and <= 8.2
 
