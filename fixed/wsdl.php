@@ -54,6 +54,10 @@ class wsdl extends nusoap_base
     var $password = '';                // Password for HTTP authentication
     var $authtype = '';                // Type of HTTP authentication
     var $certRequest = array();        // Certificate for HTTP SSL authentication
+	var $wsdl_info;
+	var $currentPortOperation;
+	var $opStatus;
+	var $serviceName;
 
     /**
      * constructor
@@ -1960,3 +1964,4 @@ class wsdl extends nusoap_base
         return true;
     }
 }
+

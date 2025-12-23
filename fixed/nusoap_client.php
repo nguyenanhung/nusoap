@@ -60,6 +60,8 @@ class nusoap_client extends nusoap_base
     var $curl_options = array();    // User-specified cURL options
     var $bindingType = '';            // WSDL operation binding type
     var $use_curl = false;            // whether to always try to use cURL
+	var $wsdl;
+	var $wsdlFile;
 
     /*
 	 * fault related variables
@@ -1065,3 +1067,4 @@ if (!extension_loaded('soap')) {
     {
     }
 }
+
