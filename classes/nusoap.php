@@ -3224,7 +3224,9 @@ class soap_transport_http extends nusoap_base
                 }
                 $this->debug($err);
                 $this->setError($err);
-                curl_close($this->ch);
+                if (PHP_VERSION_ID < 80000) {
+                    curl_close($this->ch);
+                }
                 return false;
             } else {
                 //echo '<pre>';
@@ -3233,7 +3235,9 @@ class soap_transport_http extends nusoap_base
             }
             // close curl
             $this->debug('No cURL error, closing cURL');
-            curl_close($this->ch);
+            if (PHP_VERSION_ID < 80000) {
+                curl_close($this->ch);
+            }
 
             // try removing skippable headers
             $savedata = $data;
